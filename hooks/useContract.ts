@@ -4,21 +4,22 @@ import { useMemo } from "react";
 
 export default function useContract<T extends Contract = Contract>(
   address: string,
-  ABI: any
+  ABI: { contractName: string; abi: any }
 ): T | null {
   const { library, account, chainId } = useWeb3React();
+  const { abi } = ABI;
 
   return useMemo(() => {
-    if (!address || !ABI || !library || !chainId) {
+    if (!address || !abi || !library || !chainId) {
       return null;
     }
 
     try {
-      return new Contract(address, ABI, library.getSigner(account));
+      return new Contract(address, abi, library.getSigner(account));
     } catch (error) {
       console.error("Failed To Get Contract", error);
 
       return null;
     }
-  }, [address, ABI, library, account]) as T;
+  }, [address, abi, library, account]) as T;
 }
