@@ -22,6 +22,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { useRouter } from "next/dist/client/router";
 import DatePicker from "@mui/lab/DatePicker";
 import { TimePicker } from "@mui/lab";
+import mixpanel from "mixpanel-browser";
 
 const Input = styled("input")({
   display: "none",
@@ -90,8 +91,12 @@ function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  mixpanel.track("Page view", { page: "Home" });
+  if (isConnected) mixpanel.track("Connected to MetaMask");
+
   const submitForm = async (e) => {
     e.preventDefault();
+    mixpanel.track("Button click", { name: "Launch My NFT" });
 
     if (!audioFiles || !artFile) return; // TODO: Display validation
 
@@ -177,6 +182,7 @@ function Home() {
       );
 
       const receipt = await trx.wait();
+      mixpanel.track("Launch transaction confirmed"); // TODO: Update this to track price
 
       // TODO: Find a better way to navigate to new contract address
       const projects = await audioNFTFactory?.getDeployedProjects();
@@ -184,6 +190,8 @@ function Home() {
       router.push(`/collection/${cid}`);
     } catch (error) {
       console.error("Failed to launch nft project", error);
+      setLoading(false);
+      // TODO: Set error alert
     }
 
     // SPLITTING AUDIO:
@@ -244,6 +252,9 @@ function Home() {
                 label="Project Name"
                 variant="outlined"
                 fullWidth
+                onFocus={(e) =>
+                  mixpanel.track("Input focus", { name: "Project name" })
+                }
                 onChange={(e) => setName(e.target.value)}
               />
             </Grid>
@@ -321,7 +332,14 @@ function Home() {
                   type="file"
                   onChange={(e) => setAudioFiles(e.target.files)}
                 />
-                <Button variant="outlined" size="medium" component="span">
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  component="span"
+                  onClick={(e) =>
+                    mixpanel.track("Button click", { name: "Upload Audio" })
+                  }
+                >
                   Upload Audio
                 </Button>
               </Label>
