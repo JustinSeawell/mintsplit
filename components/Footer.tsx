@@ -13,7 +13,16 @@ export default function Footer() {
       <Typography fontFamily={"monospace"} fontSize={13}>
         version 1.0
         <br /> CraftΞd with carΞ
-        <br /> (Say hello on twitter)
+        <br /> (Say hello on{" "}
+        <a
+          href="https://twitter.com/mintsplitio"
+          target="_blank"
+          rel="noreferrer"
+          style={{ textDecoration: "underline" }}
+        >
+          twitter
+        </a>
+        )
       </Typography>
     </StyledFooter>
   );
