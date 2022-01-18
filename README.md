@@ -3,6 +3,8 @@
 
 MintSplit is an NFT creation platform that enables musicians to turn their music into NFTs.
 
+Please view the working prototype located at: [https://app.mintsplit.io](https://app.mintsplit.io/) (Rinkeby network only)
+
 ## Getting Started
 
 First, run the development server:
