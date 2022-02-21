@@ -1,25 +1,43 @@
-import { Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { AppBar, Toolbar, Typography, useScrollTrigger } from "@mui/material";
 import Link from "next/link";
+import React from "react";
 import useEagerConnect from "../hooks/useEagerConnect";
 import Account from "./Account";
 
-const Nav = styled("nav")({
-  display: "flex",
-  justifyContent: "space-between",
-  padding: "1.5rem",
-});
+interface ElevationScrollProps {
+  children: React.ReactElement;
+}
+
+function ElevationScroll({ children }: ElevationScrollProps) {
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0,
+  });
+}
 
 export default function Navbar() {
   const triedToEagerConnect = useEagerConnect();
   return (
-    <Nav>
-      <Link href="/">
-        <a>
-          <Typography fontWeight={900}>MintSplit</Typography>
-        </a>
-      </Link>
-      <Account triedToEagerConnect={triedToEagerConnect} />
-    </Nav>
+    <>
+      <ElevationScroll>
+        <AppBar position="sticky" color="default">
+          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Link href="/">
+              <a>
+                <Typography fontWeight={900} fontSize={"1.5rem"}>
+                  MintSplit
+                </Typography>
+              </a>
+            </Link>
+            <Account triedToEagerConnect={triedToEagerConnect} />
+          </Toolbar>
+        </AppBar>
+      </ElevationScroll>
+      <Toolbar />
+    </>
   );
 }

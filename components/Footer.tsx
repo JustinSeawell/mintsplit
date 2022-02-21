@@ -2,11 +2,11 @@ import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 const StyledFooter = styled("footer")({
-  padding: "1.5rem",
+  marginTop: "2rem",
+  padding: "2rem",
   textAlign: "center",
 });
 
-// TODO: Add twitter link
 export default function Footer() {
   return (
     <StyledFooter>
@@ -15,7 +15,7 @@ export default function Footer() {
         <br /> CraftΞd with carΞ
         <br /> (Say hello on{" "}
         <a
-          href="https://twitter.com/mintsplitio"
+          href={process.env.NEXT_PUBLIC_TWITTER_URL}
           target="_blank"
           rel="noreferrer"
           style={{ textDecoration: "underline" }}

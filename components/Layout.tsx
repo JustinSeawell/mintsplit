@@ -3,7 +3,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 
 const Main = styled("main")({
-  minHeight: "calc(100vh - 72px - 107px);",
+  minHeight: "calc(100vh - 64px - 232px);", // TODO: Perfect this
   textAlign: "center",
 });
 

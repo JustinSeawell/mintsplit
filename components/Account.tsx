@@ -1,3 +1,4 @@
+import { Box, Button, Link, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
 import { UserRejectedRequestError } from "@web3-react/injected-connector";
 import { useEffect, useState } from "react";
@@ -44,7 +45,9 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
     return (
       <div>
         {isWeb3Available ? (
-          <button
+          <Button
+            variant="outlined"
+            color="secondary"
             disabled={connecting}
             onClick={() => {
               setConnecting(true);
@@ -59,25 +62,39 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
               });
             }}
           >
-            {isMetaMaskInstalled ? "Connect to MetaMask" : "Connect to Wallet"}
-          </button>
+            <Typography fontWeight={300} fontSize={".8rem"}>
+              {isMetaMaskInstalled
+                ? "Connect to MetaMask"
+                : "Connect to Wallet"}
+            </Typography>
+          </Button>
         ) : (
-          <button onClick={startOnboarding}>Install Metamask</button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={startOnboarding}
+          >
+            <Typography fontWeight={300} fontSize={".8rem"}>
+              Install Metamask
+            </Typography>
+          </Button>
         )}
       </div>
     );
   }
 
   return (
-    <a
-      {...{
-        href: formatEtherscanLink("Account", [chainId, account]),
-        target: "_blank",
-        rel: "noopener noreferrer",
-      }}
-    >
-      {ENSName || `${shortenHex(account, 4)}`}
-    </a>
+    <Link href="/profile" style={{ textDecoration: "none" }}>
+      <Button variant="outlined" color="secondary">
+        <Typography
+          fontWeight={300}
+          fontSize={".8rem"}
+          sx={{ textDecoration: "none" }}
+        >
+          {ENSName || `${shortenHex(account, 4)}`}
+        </Typography>
+      </Button>
+    </Link>
   );
 };
 

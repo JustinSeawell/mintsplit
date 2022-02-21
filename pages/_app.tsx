@@ -1,18 +1,30 @@
 import { Web3ReactProvider } from "@web3-react/core";
 import type { AppProps } from "next/app";
-import Layout from "../components/Layout";
 import getLibrary from "../getLibrary";
 import "../styles/globals.css";
 import mixpanel from "mixpanel-browser";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../theme";
+import { SongsProvider } from "../contexts/Songs";
+import { ProjectProvider } from "../contexts/Project";
+import { RevenueSplitProvider } from "../contexts/RevenueSplit";
 
 function NextWeb3App({ Component, pageProps }: AppProps) {
-  mixpanel.init("7af5377299121b8ba439ef16a454b949", { debug: true }); // TODO: Set debug by env
+  mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_ID, {
+    debug: process.env.NEXT_PUBLIC_ENVIRONMENT != "prod",
+  });
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <ThemeProvider theme={theme}>
+        <SongsProvider>
+          <ProjectProvider>
+            <RevenueSplitProvider>
+              <Component {...pageProps} />
+            </RevenueSplitProvider>
+          </ProjectProvider>
+        </SongsProvider>
+      </ThemeProvider>
     </Web3ReactProvider>
   );
 }
