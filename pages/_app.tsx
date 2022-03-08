@@ -8,6 +8,7 @@ import theme from "../theme";
 import { SongsProvider } from "../contexts/Songs";
 import { ProjectProvider } from "../contexts/Project";
 import { RevenueSplitProvider } from "../contexts/RevenueSplit";
+import { NetworkProviderProvider } from "../contexts/NetworkProvider";
 
 function NextWeb3App({ Component, pageProps }: AppProps) {
   mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_ID, {
@@ -16,15 +17,17 @@ function NextWeb3App({ Component, pageProps }: AppProps) {
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <ThemeProvider theme={theme}>
-        <SongsProvider>
-          <ProjectProvider>
-            <RevenueSplitProvider>
-              <Component {...pageProps} />
-            </RevenueSplitProvider>
-          </ProjectProvider>
-        </SongsProvider>
-      </ThemeProvider>
+      <NetworkProviderProvider>
+        <ThemeProvider theme={theme}>
+          <SongsProvider>
+            <ProjectProvider>
+              <RevenueSplitProvider>
+                <Component {...pageProps} />
+              </RevenueSplitProvider>
+            </ProjectProvider>
+          </SongsProvider>
+        </ThemeProvider>
+      </NetworkProviderProvider>
     </Web3ReactProvider>
   );
 }

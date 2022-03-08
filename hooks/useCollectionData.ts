@@ -1,27 +1,45 @@
+import { BigNumber } from "ethers";
 import useSWR from "swr";
-import { AudioNFT } from "../contracts/types";
-import useAudioNFTContract from "./useAudioNFTContract";
+import { MintSplitERC721 } from "../contracts/types";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
+import useNFTContract from "./useNFTContract";
 
-function getCollectionData(contract: AudioNFT) {
+function getCollectionData(contract: MintSplitERC721) {
   return async (_: string, address: string) => {
-    const [name, cost, totalSupply, maxSupply, allowMintingAfter, isRevealed] =
-      await Promise.all([
-        await contract.name(),
-        await contract.cost(),
-        await contract.totalSupply(),
-        await contract.maxSupply(),
-        await contract.allowMintingAfter(),
-        await contract.isRevealed(),
-      ]);
+    const [
+      name,
+      contentCount,
+      mintLimit,
+      isPaused,
+      mintPrice,
+      totalSupply,
+      secondsUntilMinting,
+      supplyLimits,
+    ] = await Promise.all([
+      await contract.name(),
+      await contract.contentCount(),
+      await contract.mintLimit(),
+      await contract.isPaused(),
+      await contract.mintPrice(),
+      await contract.totalSupply(),
+      await contract.getSecondsUntilMinting(),
+      await contract.getSupplyLimits(),
+    ]);
+
+    const totalSupplyLimit = supplyLimits.reduce(
+      (prev, value) => prev.add(value),
+      BigNumber.from(0)
+    );
 
     return {
       name,
-      cost,
+      contentCount,
+      mintLimit,
+      isPaused,
+      mintPrice,
       totalSupply,
-      maxSupply,
-      allowMintingAfter,
-      isRevealed,
+      secondsUntilMinting,
+      totalSupplyLimit,
     };
   };
 }
@@ -30,7 +48,7 @@ export default function useCollectionData(
   contractAddress: string,
   suspense = false
 ) {
-  const contract = useAudioNFTContract(contractAddress);
+  const contract = useNFTContract(contractAddress);
 
   const shouldFetch = typeof contractAddress === "string" && !!contract;
 

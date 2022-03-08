@@ -5,6 +5,7 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  TextField,
   Typography,
 } from "@mui/material";
 import theme from "../../theme";
@@ -31,9 +32,7 @@ function SongCardPreview({ song }: SongCardPreviewProps) {
           {name || "-"}
         </Typography>
         <Typography variant="body2">
-          {`${!!editions ? editions : "-"}/${
-            !!editions ? editions : "-"
-          } remaining`}
+          {`Minted ${!!editions ? 0 : "-"}/${!!editions ? editions : "-"}`}
         </Typography>
         <Grid container item justifyContent={"center"} mt={"1rem"}>
           <figure style={{ margin: 0, width: "100%" }}>
@@ -47,14 +46,19 @@ function SongCardPreview({ song }: SongCardPreviewProps) {
             </audio>
           </figure>
         </Grid>
-      </CardContent>
-      <CardActions>
-        <Grid container justifyContent={"center"}>
-          <Button variant="contained" size="large" fullWidth disabled>
-            Mint
-          </Button>
+        <Grid mt={"2rem"}>
+          <TextField
+            id="cost-per-mint"
+            label="Mint Amount"
+            helperText="Choose how many you want to mint."
+            variant="outlined"
+            type={"number"}
+            fullWidth
+            value={0}
+            disabled
+          />
         </Grid>
-      </CardActions>
+      </CardContent>
     </Card>
   );
 }

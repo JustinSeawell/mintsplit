@@ -66,7 +66,6 @@ function AddressList({ addresses, setAddresses }: AddressListProps) {
               error={addressError}
             />
             <Button
-              color="secondary"
               variant="outlined"
               onClick={handleAddressSubmit}
               disabled={addressError}

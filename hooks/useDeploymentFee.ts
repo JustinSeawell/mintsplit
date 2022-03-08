@@ -1,9 +1,9 @@
 import useSWR from "swr";
-import { AudioNFTFactory } from "../contracts/types";
-import useAudioNFTFactoryContract from "./useAudioNFTFactoryContract";
+import { MintSplitFactoryV1 } from "../contracts/types";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
+import useMintSplitFactory from "./useMintSplitFactory";
 
-function getDeploymentFee(contract: AudioNFTFactory) {
+function getDeploymentFee(contract: MintSplitFactoryV1) {
   return async (_: string, address: string) => {
     const deploymentFee = await contract.deploymentFee();
 
@@ -11,13 +11,13 @@ function getDeploymentFee(contract: AudioNFTFactory) {
   };
 }
 
-export default function useDeploymentFee(address: string, suspense = false) {
-  const contract = useAudioNFTFactoryContract(address);
+export default function useDeploymentFee(suspense = false) {
+  const contract = useMintSplitFactory();
 
-  const shouldFetch = typeof address === "string" && !!contract;
+  const shouldFetch = typeof !!contract;
 
   const result = useSWR(
-    shouldFetch ? ["DeploymentFee", address] : null,
+    shouldFetch ? ["DeploymentFee", contract] : null,
     getDeploymentFee(contract),
     { suspense }
   );

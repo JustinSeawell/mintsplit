@@ -1,0 +1,3 @@
+export const MAX_MINT_PERCENTAGE = 100;
+export const MAX_ROYALTY_PERCENTAGE = 30;
+export const DEFAULT_ROYALTY_PERCENTAGE = 7;

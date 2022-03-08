@@ -84,7 +84,7 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
   }
 
   return (
-    <Link href="/profile" style={{ textDecoration: "none" }}>
+    <Link href="/projects" style={{ textDecoration: "none" }}>
       <Button variant="outlined" color="secondary">
         <Typography
           fontWeight={300}

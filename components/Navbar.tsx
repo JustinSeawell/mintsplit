@@ -24,11 +24,11 @@ export default function Navbar() {
   return (
     <>
       <ElevationScroll>
-        <AppBar position="sticky" color="default">
+        <AppBar position="sticky" color="inherit">
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <Link href="/">
               <a>
-                <Typography fontWeight={900} fontSize={"1.5rem"}>
+                <Typography fontWeight={700} fontSize={"1.25rem"}>
                   MintSplit
                 </Typography>
               </a>

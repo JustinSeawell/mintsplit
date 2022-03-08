@@ -1,6 +1,5 @@
 import { LoadingButton } from "@mui/lab";
 import { styled, Typography } from "@mui/material";
-import { useRouter } from "next/dist/client/router";
 import { ChangeEvent } from "react";
 import { useSongs } from "../../contexts/Songs";
 import { convertAudioToSongs } from "./convertAudioToSongs";
@@ -13,32 +12,28 @@ const Label = styled("label")({
   display: "inline-block",
 });
 
-interface UploadAudioProps {}
+interface UploadAudioProps {
+  onSuccess: () => void;
+}
 
-function UploadAudio({}: UploadAudioProps) {
+function UploadAudio({ onSuccess }: UploadAudioProps) {
   const { setSongs } = useSongs();
-  const router = useRouter();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // TODO: update to use new context
     setSongs(convertAudioToSongs(e.target.files));
-    router.push("/setup/nfts");
+    onSuccess();
   };
 
   return (
     <>
-      <Typography variant="h3" fontWeight={600} gutterBottom component={"div"}>
-        Audio NFTs Go{" "}
-        <Typography
-          variant="h3"
-          fontWeight={"inherit"}
-          display={"inline"}
-          color={"primary"}
-        >
-          Here
-        </Typography>
-        👇
+      <Typography variant="h4" gutterBottom>
+        Upload Content
       </Typography>
-      <Label htmlFor="audio-files">
+      <Typography variant="subtitle1" gutterBottom>
+        Upload your content to begin creating.
+      </Typography>
+      <Label htmlFor="audio-files" sx={{ marginTop: "1rem" }}>
         <Input
           id="audio-files"
           accept="audio/*"
@@ -48,14 +43,13 @@ function UploadAudio({}: UploadAudioProps) {
         />
         <LoadingButton
           variant="contained"
+          color="secondary"
+          size="large"
           component="span"
           fullWidth
-          style={{
-            padding: "1.5rem",
-            borderRadius: 4,
-          }}
+          sx={{ padding: "1rem 1.5rem" }}
         >
-          <Typography fontSize={"1.1rem"}>Upload Audio</Typography>
+          Upload Audio
         </LoadingButton>
       </Label>
     </>

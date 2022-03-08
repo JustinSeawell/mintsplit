@@ -17,7 +17,7 @@ function OrderSummary({ fee }: OrderSummaryProps) {
         Total Cost
       </Typography>
       <Typography fontSize={"1.5rem"} fontWeight={300}>
-        Total: {fee} Ξ (+ gas)
+        Total: {fee} (+ gas) Ξ
       </Typography>
       <Typography variant="caption">
         This is the cost to deploy your NFT project to the blockchain.

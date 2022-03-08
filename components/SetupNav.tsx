@@ -1,26 +1,30 @@
 import { Button, Grid } from "@mui/material";
-import { useRouter } from "next/dist/client/router";
 
 interface SetupNavProps {
-  nextRoute: string;
+  handleNext: () => void;
+  handleBack: () => void;
   nextText?: string;
   backText?: string;
 }
 
-function SetupNav({ nextRoute, nextText, backText }: SetupNavProps) {
-  const router = useRouter();
-
+function SetupNav({
+  handleNext,
+  handleBack,
+  backText,
+  nextText,
+}: SetupNavProps) {
   return (
     <Grid container item justifyContent={"space-between"}>
-      <Button variant="outlined" color="primary" onClick={() => router.back()}>
+      <Button variant="outlined" color="secondary" onClick={handleBack}>
         {backText ?? "Go Back"}
       </Button>
       <Button
         variant="contained"
         size="large"
-        onClick={() => router.push(nextRoute)}
+        color="secondary"
+        onClick={handleNext}
       >
-        {nextText ?? "Next 👉"}
+        {nextText ?? "Next"}
       </Button>
     </Grid>
   );

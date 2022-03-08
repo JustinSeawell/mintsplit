@@ -56,14 +56,17 @@ function SongInput({ index, song, setSong }: SongInputProps) {
 
   return (
     <>
-      <Grid container item spacing={1}>
-        <Grid container item>
-          <Typography variant="h6" color={theme.palette.secondary.light}>
-            {fileName}
-          </Typography>
-        </Grid>
-        <Grid item xs={7} mt={"1rem"}>
+      <Grid container item spacing={1} mb={"1rem"}>
+        <Grid item xs={7}>
           <Stack spacing={2} width={"95%"}>
+            <Typography
+              variant="h6"
+              color={theme.palette.primary.light}
+              textAlign={"left"}
+              gutterBottom
+            >
+              {fileName}
+            </Typography>
             <TextField
               value={name}
               placeholder={fileName}
@@ -92,7 +95,6 @@ function SongInput({ index, song, setSong }: SongInputProps) {
               <Button
                 variant="outlined"
                 size="large"
-                color="secondary"
                 component="span"
                 fullWidth
               >
@@ -102,7 +104,7 @@ function SongInput({ index, song, setSong }: SongInputProps) {
             {art && (
               <Typography
                 textAlign={"left"}
-                color={theme.palette.secondary.light}
+                color={theme.palette.primary.light}
                 variant="subtitle2"
               >
                 {art.name}
@@ -117,7 +119,7 @@ function SongInput({ index, song, setSong }: SongInputProps) {
           </Grid>
         </Grid>
       </Grid>
-      <Divider sx={{ width: "100%", marginTop: "1rem" }} />
+      <Divider sx={{ width: "100%", marginBottom: "1.5rem" }} />
     </>
   );
 }

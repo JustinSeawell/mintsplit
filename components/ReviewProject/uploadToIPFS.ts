@@ -1,7 +1,6 @@
 import { create } from "ipfs-http-client";
-import { AddResult } from "ipfs-core-types/src/root";
 
-const ipfs = create({
+export const ipfs = create({
   host: "ipfs.infura.io",
   port: 5001,
   protocol: "https",
@@ -10,7 +9,7 @@ const ipfs = create({
 export const uploadFilesToIPFS = async (
   fileDetails: { path: string; content: File | Blob | string }[]
 ) => {
-  let results: AddResult[] = [];
+  let results = [];
   try {
     for await (const result of ipfs.addAll(fileDetails, {
       wrapWithDirectory: true,
@@ -24,5 +23,4 @@ export const uploadFilesToIPFS = async (
   return results;
 };
 
-export const getIPFSDirectory = (results: AddResult[]) =>
-  results.pop().cid.toString();
+export const getIPFSDirectory = (results) => results.pop().cid.toString();

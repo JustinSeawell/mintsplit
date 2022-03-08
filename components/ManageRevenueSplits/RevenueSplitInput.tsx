@@ -19,6 +19,7 @@ import {
 import AddressSelect from "./AddressSelect";
 import { cloneRevenueSplitConfig } from "./cloneRevenueSplit";
 import { convertToBps, convertToPercentage } from "./convertToBps";
+import DeleteForever from "@mui/icons-material/DeleteForever";
 
 interface RevenueSplitInputProps {
   index: number;
@@ -83,6 +84,14 @@ function RevenueSplitInput({
     setRevenueSplitConfig(clonedConfig, index);
   };
 
+  const removeSplit = (splitIndex: number) => {
+    const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
+    console.log(clonedConfig.splits);
+    clonedConfig.splits.splice(splitIndex, 1);
+    console.log(clonedConfig.splits);
+    setRevenueSplitConfig(clonedConfig, index);
+  };
+
   useEffect(() => {
     if (!maxSplit) return;
 
@@ -128,7 +137,7 @@ function RevenueSplitInput({
         }}
       >
         <Stack spacing={1}>
-          <Typography variant="h6" color={theme.palette.secondary.light}>
+          <Typography variant="h6" color={theme.palette.primary.light}>
             {name}
           </Typography>
           <Typography variant="body1" color={theme.palette.grey[600]}>
@@ -137,7 +146,6 @@ function RevenueSplitInput({
           <Grid container item pt={"1.25rem"}>
             <Button
               variant="outlined"
-              color="secondary"
               disabled={allAddressesInUse}
               onClick={addSplit}
               sx={{ marginRight: "1rem" }}
@@ -181,6 +189,11 @@ function RevenueSplitInput({
                   }
                   error={!isValidSplit}
                 />
+              </Grid>
+              <Grid container item xs={1}>
+                <Button onClick={() => removeSplit(splitIndex)}>
+                  <DeleteForever color="action" />
+                </Button>
               </Grid>
             </Grid>
           ))}
