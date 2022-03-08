@@ -43,6 +43,7 @@ contract("MintSplitERC721", ([deployer, userA, userB, userC, userD, userE]) => {
             mintLimit: 5,
             releaseTime: 0,
           },
+          2000,
           {
             from: userA,
           }
@@ -225,6 +226,13 @@ contract("MintSplitERC721", ([deployer, userA, userB, userC, userD, userE]) => {
       });
     });
 
+    describe("#maxLimit", () => {
+      it("should have a max limit", async () => {
+        const maxLimit = await erc721Proxy.maxLimit();
+        assert.equal(maxLimit, 2000);
+      });
+    });
+
     describe("#tokenURI()", () => {
       it("should return the URI with the content id and edition #", async () => {
         const [contentId, edition] = await erc721Proxy.tokenSubject(2);
@@ -240,6 +248,18 @@ contract("MintSplitERC721", ([deployer, userA, userB, userC, userD, userE]) => {
 
         assert.equal(contentId, 2);
         assert.equal(edition, 1);
+      });
+    });
+
+    describe("#getSupplyLimits()", () => {
+      it("should return supply limits", async () => {
+        const supplyLimits = await erc721Proxy.getSupplyLimits();
+        const [limit1, limit2, limit3] = supplyLimits;
+
+        assert.equal(supplyLimits.length, 3);
+        assert.equal(limit1, 1);
+        assert.equal(limit2, 10);
+        assert.equal(limit3, 100);
       });
     });
 

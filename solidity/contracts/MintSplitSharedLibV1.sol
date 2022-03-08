@@ -12,6 +12,7 @@ library MintSplitSharedLibV1 {
         uint mintLimit;
         uint releaseTime;
         string baseURI;
+        uint package; // 0 based index of package
     }
     
     struct PaymentSplit {

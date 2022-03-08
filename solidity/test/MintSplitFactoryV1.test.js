@@ -102,32 +102,46 @@ contract("MintSplitFactoryV1", ([deployer, userA, userB, userC]) => {
     });
   });
 
-  describe("#setDeploymentFee()", () => {
-    it("should update the deployment fee", async () => {
-      const oldFee = web3.utils.fromWei(
-        await mintSplitFactoryV1.deploymentFee(),
-        "ether"
+  describe("#setPackages()", () => {
+    it("should update the packages", async () => {
+      const oldPackages = await mintSplitFactoryV1.getPackages();
+
+      const [oldPackage_1] = oldPackages;
+      const [oldLimit, oldFee] = oldPackage_1;
+      const oldFeeEth = web3.utils.fromWei(oldFee, "ether");
+
+      await mintSplitFactoryV1.setPackages(
+        [
+          [2000, web3.utils.toWei(".19", "ether")],
+          [4000, web3.utils.toWei(".29", "ether")],
+        ],
+        { from: deployer }
       );
 
-      await mintSplitFactoryV1.setDeploymentFee(
-        web3.utils.toWei(".01", "ether"),
-        {
-          from: deployer,
-        }
-      );
+      const newPackages = await mintSplitFactoryV1.getPackages();
+      const [newPackage_1, newPackage_2] = newPackages;
+      const [newLimit_1, newFee_1] = newPackage_1;
+      const [newLimit_2, newFee_2] = newPackage_2;
+      const newFeeEth_1 = web3.utils.fromWei(newFee_1, "ether");
+      const newFeeEth_2 = web3.utils.fromWei(newFee_2, "ether");
 
-      const newFee = web3.utils.fromWei(
-        await mintSplitFactoryV1.deploymentFee(),
-        "ether"
-      );
+      assert.equal(oldPackages.length, 1);
+      assert.equal(oldLimit, 2000);
+      assert.equal(oldFeeEth, "0.19");
 
-      assert.equal(oldFee, "0.03");
-      assert.equal(newFee, "0.01");
+      assert.equal(newPackages.length, 2);
+      assert.equal(newLimit_1, 2000);
+      assert.equal(newLimit_2, 4000);
+      assert.equal(newFeeEth_1, "0.19");
+      assert.equal(newFeeEth_2, "0.29");
     });
 
     it("should only be callable by the owner", async () => {
-      await mintSplitFactoryV1.setDeploymentFee(
-        web3.utils.toWei(".01", "ether"),
+      await mintSplitFactoryV1.setPackages(
+        [
+          [2000, web3.utils.toWei(".19", "ether")],
+          [4000, web3.utils.toWei(".29", "ether")],
+        ],
         {
           from: userA,
         }

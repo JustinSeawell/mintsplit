@@ -19,6 +19,7 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
     uint[] public supplyLimits;
     uint public mintPrice;
     uint public mintLimit;
+    uint public maxLimit;
     uint public allowMintingAfter = 0;
     uint public timeDeployed;
     string public baseURI;
@@ -35,7 +36,8 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
     function initialize(
         address _owner,
         address _revenueSplitter,
-        MintSplitSharedLibV1.ProjectParams calldata _params
+        MintSplitSharedLibV1.ProjectParams calldata _params,
+        uint _maxLimit
     ) initializer public {
         require(_params.supplyLimits.length == _params.contentCount);
 
@@ -48,6 +50,7 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
         mintPrice = _params.mintPrice;
         mintLimit = _params.mintLimit;
         baseURI = _params.baseURI;
+        maxLimit = _maxLimit;
 
         if (_params.releaseTime > block.timestamp) {
             allowMintingAfter = _params.releaseTime - block.timestamp;
@@ -66,8 +69,9 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
     // External
     function mint(uint[] calldata contentIds) external payable nonReentrant {
         require(!isPaused);
-        require(block.timestamp >= timeDeployed + allowMintingAfter);
         require(contentIds.length > 0);
+        require(block.timestamp >= timeDeployed + allowMintingAfter);
+        require(totalSupply() + contentIds.length <= maxLimit);
         
         if (mintLimit > 0) {
             require((balanceOf(msg.sender) + contentIds.length) <= mintLimit);

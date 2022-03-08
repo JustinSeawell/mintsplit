@@ -1,6 +1,6 @@
 const BN = web3.utils.BN;
 
-exports.DEPLOYMENT_FEE = web3.utils.toWei(".03", "ether");
+exports.DEPLOYMENT_FEE = web3.utils.toWei(".19", "ether");
 exports.MINT_PRICE = web3.utils.toWei(".08", "ether");
 
 exports.createProject = async (
@@ -19,6 +19,7 @@ exports.createProject = async (
     mintLimit: 5,
     releaseTime: 0,
     baseURI: "ipfs://aaaaaaaaaa/",
+    package: 0,
     ...params,
   };
 

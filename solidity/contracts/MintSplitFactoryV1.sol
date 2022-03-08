@@ -11,18 +11,20 @@ import "./RevenueSplitter.sol";
 contract MintSplitFactoryV1 is Ownable {
     address public immutable erc721Implementation;
     address public immutable revenueSplitterImplementation;
-    uint public deploymentFee;
     bool public isPaused = false;
 
     address[] public projects;
+    uint[2][] public packages; // [limit, fee]
     mapping(address => address[]) public userProjects;
 
     event ProjectCreated(address indexed project, address indexed payment, address indexed owner);
 
-    constructor(address _erc721Implementation, address _revenueSplitterImplementation, uint _deploymentFee) {
+    constructor(address _erc721Implementation, address _revenueSplitterImplementation, uint fee, uint limit) {
         erc721Implementation = _erc721Implementation;
         revenueSplitterImplementation = _revenueSplitterImplementation;
-        deploymentFee = _deploymentFee;
+        packages = [
+            [limit, fee]
+        ];
     }
 
     // External
@@ -34,14 +36,17 @@ contract MintSplitFactoryV1 is Ownable {
         payable
     {
         require(!isPaused);
-        require(msg.value == deploymentFee);
+        
+        uint[2] storage package = packages[_params.package];
+        require(msg.value == package[1]);
+
         MintSplitERC721 newProject = MintSplitERC721(Clones.clone(erc721Implementation));
         RevenueSplitter newRevenueSplitter = RevenueSplitter(Clones.clone(revenueSplitterImplementation));
         
         address newProjectAddr = address(newProject);
         address newRevenueSplitterAddr = address(newRevenueSplitter);
         
-        newProject.initialize(msg.sender, newRevenueSplitterAddr, _params);
+        newProject.initialize(msg.sender, newRevenueSplitterAddr, _params, package[0]);
         newRevenueSplitter.initialize(msg.sender, newProjectAddr, _splitConfigs);
 
         projects.push(newProjectAddr);
@@ -58,13 +63,13 @@ contract MintSplitFactoryV1 is Ownable {
         return userProjects[user];
     }
 
+    function getPackages() external view returns (uint[2][] memory) {
+        return packages;
+    }
+
     // Owner
     function setIsPaused(bool _isPaused) public onlyOwner {
         isPaused = _isPaused;
-    }
-
-    function setDeploymentFee(uint _newDeploymentFee) public onlyOwner {
-        deploymentFee = _newDeploymentFee;
     }
 
     function withdraw() public payable onlyOwner {
@@ -72,5 +77,9 @@ contract MintSplitFactoryV1 is Ownable {
             value: address(this).balance
         }("");
         require(success);
+    }
+
+    function setPackages(uint[2][] calldata _newPackages) public onlyOwner {
+        packages = _newPackages;
     }
 }
