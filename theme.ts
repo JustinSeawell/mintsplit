@@ -2,19 +2,19 @@ import { createTheme } from "@mui/material";
 
 export default createTheme({
   typography: {
-    fontFamily: ["Inter Variable"].join(","),
+    fontFamily: ["IBM Plex Sans"].join(","),
   },
   palette: {
     secondary: {
-      light: "#46444c",
-      main: "#1f1d24",
-      dark: "#000000",
+      light: "#bfa6f0",
+      main: "#8e77bd",
+      dark: "#5f4b8d",
       contrastText: "#ffffff",
     },
     primary: {
-      light: "#d9b5ff",
-      main: "#a585ff",
-      dark: "#7257cb",
+      light: "#3d4755",
+      main: "#16202c",
+      dark: "#000001",
       contrastText: "#ffffff",
     },
   },
