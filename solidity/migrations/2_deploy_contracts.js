@@ -4,7 +4,7 @@ const MintSplitFactoryV1 = artifacts.require("MintSplitFactoryV1");
 const MintSplitSharedLibV1 = artifacts.require("MintSplitSharedLibV1");
 
 module.exports = function (_deployer) {
-  const DEPLOYMENT_FEE = web3.utils.toWei(".03", "ether");
+  const DEPLOYMENT_FEE = web3.utils.toWei(".19", "ether");
 
   // TODO: Figure out why this doesn't work in async mode
 

@@ -21,7 +21,7 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
     uint public mintLimit;
     uint public allowMintingAfter = 0;
     uint public timeDeployed;
-    string private baseURI;
+    string public baseURI;
     RevenueSplitter public revenueSplitter;
     bool public isPaused = false;
 
@@ -68,7 +68,10 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
         require(!isPaused);
         require(block.timestamp >= timeDeployed + allowMintingAfter);
         require(contentIds.length > 0);
-        require((balanceOf(msg.sender) + contentIds.length) <= mintLimit);
+        
+        if (mintLimit > 0) {
+            require((balanceOf(msg.sender) + contentIds.length) <= mintLimit);
+        }
 
         if (msg.sender != owner()) {
             require(msg.value == (contentIds.length * mintPrice));
@@ -137,6 +140,10 @@ contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgra
         require(_exists(tokenId), "token does not exist");
 
         return tokenSubjects[tokenId];
+    }
+
+    function getSupplyLimits() public view returns (uint[] memory) {
+        return supplyLimits;
     }
 
     // Only Owner
