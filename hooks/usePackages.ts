@@ -3,22 +3,22 @@ import { MintSplitFactoryV1 } from "../contracts/types";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
 import useMintSplitFactory from "./useMintSplitFactory";
 
-function getDeploymentFee(contract: MintSplitFactoryV1) {
+function getPackages(contract: MintSplitFactoryV1) {
   return async (_: string, address: string) => {
-    const deploymentFee = await contract.deploymentFee();
+    const packages = await contract.getPackages();
 
-    return deploymentFee;
+    return packages;
   };
 }
 
-export default function useDeploymentFee(suspense = false) {
+export default function usePackages(suspense = false) {
   const contract = useMintSplitFactory();
 
-  const shouldFetch = typeof !!contract;
+  const shouldFetch = !!contract;
 
   const result = useSWR(
-    shouldFetch ? ["DeploymentFee", contract] : null,
-    getDeploymentFee(contract),
+    shouldFetch ? ["Packages"] : null,
+    getPackages(contract),
     { suspense }
   );
 

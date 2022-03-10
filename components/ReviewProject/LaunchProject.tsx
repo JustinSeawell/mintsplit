@@ -102,6 +102,7 @@ function LaunchProject({
         mintLimit: mintLimit || 0,
         releaseTime: Math.round(releaseDate.getTime() / 1000),
         baseURI: `ipfs://${dir}/`,
+        package: 0, // Default package
       } as ProjectParamsStruct;
 
       setParams(_params);

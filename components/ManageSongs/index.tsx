@@ -1,10 +1,12 @@
 import { LoadingButton } from "@mui/lab";
-import { Grid, styled, Typography } from "@mui/material";
-import { ChangeEvent } from "react";
+import { Card, Divider, Grid, styled, Typography } from "@mui/material";
+import { ChangeEvent, useMemo } from "react";
 import { useSongs } from "../../contexts/Songs";
+import usePackages from "../../hooks/usePackages";
 import SetupNav from "../SetupNav";
 import { convertAudioToSongs } from "../UploadAudio/convertAudioToSongs";
 import SongInput from "./SongInput";
+import SpaceCard from "./SpaceCard";
 
 const Input = styled("input")({
   display: "none",
@@ -20,6 +22,17 @@ interface ManageSongsProps {
 
 function ManageSongs({ onSuccess, handleBack }: ManageSongsProps) {
   const { songs, setSong, setSongs } = useSongs();
+  const nftCount = useMemo(
+    () =>
+      songs.reduce(
+        (sum, { editions }) => sum + (isNaN(editions) ? 0 : editions),
+        0
+      ),
+    [songs]
+  );
+  const { data: packages } = usePackages();
+  const [package1] = packages ?? [];
+  const [limit] = package1 ?? [];
 
   const handleNext = () => {
     // TODO: Validate input
@@ -39,25 +52,31 @@ function ManageSongs({ onSuccess, handleBack }: ManageSongsProps) {
       <Typography variant="subtitle1" gutterBottom>
         Configure your NFT content for the blockchain.
       </Typography>
-      <Label htmlFor="audio-files" sx={{ marginTop: "1rem" }}>
-        <Input
-          id="audio-files"
-          accept="audio/*"
-          multiple
-          type="file"
-          onChange={handleChange}
-        />
-        <LoadingButton
-          variant="contained"
-          color="secondary"
-          size="large"
-          component="span"
-          fullWidth
-          sx={{ padding: "1rem 1.5rem" }}
-        >
-          Add Songs
-        </LoadingButton>
-      </Label>
+      <Grid item xs={10} marginX={"auto"} textAlign="left">
+        <Label htmlFor="audio-files" sx={{ marginY: "1rem" }}>
+          <Input
+            id="audio-files"
+            accept="audio/*"
+            multiple
+            type="file"
+            onChange={handleChange}
+          />
+          <LoadingButton
+            variant="contained"
+            color="secondary"
+            size="large"
+            component="span"
+            fullWidth
+            sx={{ padding: "1rem 1.5rem" }}
+          >
+            Add Songs
+          </LoadingButton>
+        </Label>
+        <Grid item xs={4}>
+          <SpaceCard used={nftCount} limit={limit?.toNumber()} />
+        </Grid>
+        <Divider sx={{ width: "100%", marginTop: "1rem" }} />
+      </Grid>
       <Grid item mt={"2rem"} xs={10} marginX={"auto"}>
         {songs.map((song, index) => (
           <SongInput key={index} index={index} song={song} setSong={setSong} />

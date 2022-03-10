@@ -55,7 +55,7 @@ function Setup() {
         <Container maxWidth="lg">
           <section>
             <Stepper activeStep={activeStep}>
-              {steps.map((label, index) => {
+              {steps.map((label) => {
                 return (
                   <Step key={label}>
                     <StepLabel>{label}</StepLabel>

@@ -2,7 +2,7 @@ import { formatEther, parseEther } from "@ethersproject/units";
 import { CircularProgress, Grid, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { useSongs } from "../../contexts/Songs";
-import useDeploymentFee from "../../hooks/useDeploymentFee";
+import usePackages from "../../hooks/usePackages";
 import OrderSummary from "../OrderSummary";
 import LaunchProject from "./LaunchProject";
 import ProjectCard from "./ProjectCard";
@@ -10,8 +10,10 @@ import SongCard from "./SongCard";
 
 function ReviewProject() {
   const { songs } = useSongs();
-  const { data: deploymentFee } = useDeploymentFee();
   const [loadingMessage, setLoadingMessage] = useState<string>(null);
+  const { data: packages } = usePackages();
+  const [package1] = packages ?? [];
+  const [limit, fee] = package1 ?? [];
 
   if (loadingMessage)
     return (
@@ -38,9 +40,9 @@ function ReviewProject() {
         ))}
       </Grid>
       <Grid container item xs={10} marginX={"auto"} mt={"2rem"}>
-        <OrderSummary fee={formatEther(deploymentFee ?? 0)} />
+        <OrderSummary fee={formatEther(fee ?? 0)} />
         <LaunchProject
-          deploymentFee={deploymentFee}
+          deploymentFee={fee}
           setLoadingMessage={setLoadingMessage}
         />
       </Grid>

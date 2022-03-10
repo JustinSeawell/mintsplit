@@ -86,9 +86,7 @@ function RevenueSplitInput({
 
   const removeSplit = (splitIndex: number) => {
     const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
-    console.log(clonedConfig.splits);
     clonedConfig.splits.splice(splitIndex, 1);
-    console.log(clonedConfig.splits);
     setRevenueSplitConfig(clonedConfig, index);
   };
 
@@ -153,7 +151,7 @@ function RevenueSplitInput({
               {buttonText ?? "+ Add Revenue Split"}
             </Button>
             {allAddressesInUse && (
-              <Alert severity="info">
+              <Alert severity="warning">
                 Add an address above to enable splitting
               </Alert>
             )}
