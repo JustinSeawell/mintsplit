@@ -16,6 +16,7 @@ function getCollectionData(contract: MintSplitERC721) {
       secondsUntilMinting,
       supplyLimits,
       maxLimit,
+      revenueSplitterAddr,
     ] = await Promise.all([
       await contract.name(),
       await contract.contentCount(),
@@ -26,6 +27,7 @@ function getCollectionData(contract: MintSplitERC721) {
       await contract.getSecondsUntilMinting(),
       await contract.getSupplyLimits(),
       await contract.maxLimit(),
+      await contract.revenueSplitter(),
     ]);
 
     const totalSupplyLimit = supplyLimits.reduce(
@@ -43,6 +45,7 @@ function getCollectionData(contract: MintSplitERC721) {
       secondsUntilMinting,
       totalSupplyLimit,
       maxLimit,
+      revenueSplitterAddr,
     };
   };
 }

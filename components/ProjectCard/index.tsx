@@ -61,15 +61,7 @@ function ProjectCard({ address }: ProjectCardProps) {
         />
       </CardContent>
       <CardActions>
-        <Button
-          onClick={
-            () =>
-              window.open(
-                formatEtherscanLink("Account", [4, address]),
-                "_blank"
-              ) // TODO: Update for mainnet
-          }
-        >
+        <Button onClick={() => router.push(`/project?cid=${address}`)}>
           Manage
         </Button>
         <Button onClick={() => router.push(`/collection?cid=${address}`)}>
