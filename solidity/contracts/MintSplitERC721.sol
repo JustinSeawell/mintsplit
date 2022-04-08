@@ -1,174 +1,214 @@
-// contracts/MintSplitERC721.sol
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@manifoldxyz/royalty-registry-solidity/contracts/specs/IManifold.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@manifoldxyz/royalty-registry-solidity/contracts/specs/IManifold.sol";
+import "./MintSplitSharedLib.sol";
 import "./RevenueSplitter.sol";
+import "./IMintSplitERC721.sol";
 
-// TODO: Consider using ERC721 fork to optimize gas
-contract MintSplitERC721 is IManifold, ERC721EnumerableUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+/// @author mintsplit.io
+
+/// @title MintSplit ERC721 Smart Contract
+contract MintSplitERC721 is ERC165, ERC721Upgradeable, OwnableUpgradeable, IManifold, IMintSplitERC721 {
     using Counters for Counters.Counter;
     using Strings for uint;
 
-    uint public contentCount;
-    uint[] public supplyLimits;
-    uint public mintPrice;
-    uint public mintLimit;
-    uint public maxLimit;
-    uint public allowMintingAfter = 0;
-    uint public timeDeployed;
-    string public baseURI;
+    MintSplitSharedLib.ProjectParams private projectParams;
     RevenueSplitter public revenueSplitter;
-    bool public isPaused = false;
-
-    Counters.Counter private tokenIds;
-    mapping (uint => Counters.Counter) public contentSupplies;
-    mapping (uint => uint[2]) private tokenSubjects; // [content id, edition #]
+    mapping (uint => Counters.Counter) public supplies; // content id => supply count
+    mapping (uint => uint) public tokenContent; // token id => content id
+    mapping (uint => uint) public tokenEdition; // token id => edition #
     mapping (uint => string) public contentUriOverrides;
+    uint public tokenLimit;
+    Counters.Counter private tokens;
+    bool public paused;
+    bool private hasSplitter;
 
+    /**
+    @dev Automatically mark the implementation
+    contract as initialized when it is deployed
+    */
     constructor() initializer {}
 
+    /**
+    Initialize a new project
+    @dev Initialize a new ERC721 clone
+    @param owner the address that initialized the ERC721 clone
+    @param params the project settings configured by the user
+    @param maxLimit the max token count for this contract
+    */
     function initialize(
-        address _owner,
-        address _revenueSplitter,
-        MintSplitSharedLibV1.ProjectParams calldata _params,
-        uint _maxLimit
+        address owner,
+        MintSplitSharedLib.ProjectParams calldata params,
+        uint maxLimit
     ) initializer public {
-        require(_params.supplyLimits.length == _params.contentCount);
-
-        __ERC721_init(_params.projectName, _params.symbol);
-        _transferOwnership(_owner);
-        revenueSplitter = RevenueSplitter(_revenueSplitter);
-
-        contentCount = _params.contentCount;
-        supplyLimits = _params.supplyLimits;
-        mintPrice = _params.mintPrice;
-        mintLimit = _params.mintLimit;
-        baseURI = _params.baseURI;
-        maxLimit = _maxLimit;
-
-        if (_params.releaseTime > block.timestamp) {
-            allowMintingAfter = _params.releaseTime - block.timestamp;
-        }
-
-        timeDeployed = block.timestamp;
+        require(_checkSum(maxLimit, params.editions));
+        __ERC721_init(params.projectName, params.symbol);
+        _transferOwnership(owner);
+        projectParams = params;
+        tokenLimit = maxLimit;
     }
 
-    // Internal
+    /**
+    Get the base URI for a specific content id
+    @param contentId the content for which to get the URI
+    */
     function _baseURI(uint contentId) internal view virtual returns (string memory) {
-        if (bytes(contentUriOverrides[contentId]).length == 0) return baseURI;
-
-        return contentUriOverrides[contentId];
+        string storage overrideURI = contentUriOverrides[contentId];
+        if (bytes(overrideURI).length == 0) return projectParams.baseURI;
+        return overrideURI;
     }
 
-    // External
-    function mint(uint[] calldata contentIds) external payable nonReentrant {
-        require(!isPaused);
-        require(contentIds.length > 0);
-        require(block.timestamp >= timeDeployed + allowMintingAfter);
-        require(totalSupply() + contentIds.length <= maxLimit);
-        
-        if (mintLimit > 0) {
-            require((balanceOf(msg.sender) + contentIds.length) <= mintLimit);
+    /**
+    Check that the sum of an array of numbers is less than the provided limit
+    @param limit the limit to check the sum against
+    @param numbers the array of numbers to sum
+    */
+    function _checkSum(uint limit, uint[] calldata numbers) internal pure returns (bool) {
+        uint sum;
+        for (uint i = 0; i < numbers.length; i++) {
+            sum += numbers[i];
         }
+        return (sum - numbers.length) < limit;
+    }
 
+    /**
+    @dev See {IERC165-supportsInterface}.
+    */
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165, ERC721Upgradeable) returns (bool) {
+        return interfaceId == type(IMintSplitERC721).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /**
+    @dev See {IMintSplitERC721-mint}
+    */
+    function mint(uint cid) external payable {
+        require(!paused);
         if (msg.sender != owner()) {
-            require(msg.value == (contentIds.length * mintPrice));
+            require(block.timestamp > projectParams.releaseTime);
+            require(msg.value == projectParams.mintPrice);
         }
+        Counters.Counter storage supply = supplies[cid];
+        require(supply.current() < projectParams.editions[cid-1]);
+        supply.increment();
+        tokens.increment();
+        uint tid = tokens.current();
+        _mint(msg.sender, tid);
+        tokenContent[tid] = cid;
+        tokenEdition[tid] = supply.current();
+        if (hasSplitter) {
+            revenueSplitter.receiveMint{value: msg.value}(cid);
+        }
+    }
 
-        revenueSplitter.receiveMint{value: msg.value}(contentIds);
-
+    /**
+    @dev See {IMintSplitERC721-mintBatch}
+    */
+    function mintBatch(uint[] calldata contentIds) external payable {
+        require(!paused);
+        if (msg.sender != owner()) {
+            require(block.timestamp > projectParams.releaseTime);
+            require(msg.value == (contentIds.length * projectParams.mintPrice));
+        }
         for (uint i = 0; i < contentIds.length; i++) {
-            uint contentId = contentIds[i];
-            require(contentId > 0 && contentId <= contentCount);
-
-            Counters.Counter storage contentSupply = contentSupplies[contentId];
-
-            // The supply limit for content id 1 is found at supplyLimits[0]
-            require((contentSupply.current() + 1) <= supplyLimits[contentId - 1]);
-
-            contentSupply.increment();
-            tokenIds.increment();
-
-            uint newTokenId = tokenIds.current();
-            _mint(msg.sender, newTokenId);
-            tokenSubjects[newTokenId] = [contentId, contentSupply.current()];
+            uint cid = contentIds[i];
+            Counters.Counter storage supply = supplies[cid];
+            require(supply.current() < projectParams.editions[cid-1]);
+            supply.increment();
+            tokens.increment();
+            uint tid = tokens.current();
+            _mint(msg.sender, tid);
+            tokenContent[tid] = cid;
+            tokenEdition[tid] = supply.current();
+        }
+        if (hasSplitter) {
+            revenueSplitter.receiveMintBatch{value: msg.value}(contentIds);
         }
     }
 
-    function getRoyalties(uint256 tokenId) external view returns (address payable[] memory, uint256[] memory) {
-        uint[2] storage subject = tokenSubjects[tokenId];
-        return revenueSplitter.getContentRoyalties(subject[0]);
-    }
-
-    function getSecondsUntilMinting() external view returns (uint256) {
-        if (block.timestamp < timeDeployed + allowMintingAfter) {
-            return (timeDeployed + allowMintingAfter) - block.timestamp;
-        } else {
-            return 0;
-        }
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
+    /**
+    @dev Get royalites of a token.
+    @return recipients_ addresses of the split recipients
+    @return bps basis points of split recipients
+    */
+    function getRoyalties(uint tokenId) external view returns(address payable[] memory recipients_, uint256[] memory bps) {
         require(_exists(tokenId));
-
-        uint[2] memory subject = tokenSubject(tokenId);
-        string memory currentBaseURI = _baseURI(subject[0]);
-        return
-            bytes(currentBaseURI).length > 0
-                ? string(
-                    abi.encodePacked(
-                        currentBaseURI,
-                        subject[0].toString(), // content id
-                        '-',
-                        subject[1].toString(), // edition #
-                        ".json"
-                    )
-                )
-                : "";
+        require(hasSplitter);
+        return revenueSplitter.getRoyaltySplits(tokenContent[tokenId]);
     }
 
-    // Public
-    function tokenSubject(uint tokenId) public view returns (uint[2] memory) {
-        require(_exists(tokenId), "token does not exist");
-
-        return tokenSubjects[tokenId];
+    /**
+    Get the URI for the token
+    @param tokenId the token id for which to get the URI
+    */
+    function tokenURI(uint tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId));
+        uint contentId = tokenContent[tokenId];
+        string memory baseUri = _baseURI(tokenId);
+        if (bytes(baseUri).length == 0) return "";
+        return string(abi.encodePacked(baseUri, contentId.toString(), "-", tokenEdition[tokenId].toString(), ".json"));
     }
 
-    function getSupplyLimits() public view returns (uint[] memory) {
-        return supplyLimits;
+    /**
+    @dev See {IMintSplitERC721-getParams}
+    */
+    function getParams() external view returns (MintSplitSharedLib.ProjectParams memory params) {
+        return projectParams;
     }
 
-    // Only Owner
-    function setIsPaused(bool _state) public onlyOwner {
-        isPaused = _state;
+    /**
+    @dev See {IMintSplitERC721-addRevenueSplitter}
+    */
+    function addRevenueSplitter(
+        address implementation,
+        MintSplitSharedLib.PaymentSplitConfig[] calldata configs,
+        MintSplitSharedLib.PaymentSplit calldata defaultMint,
+        MintSplitSharedLib.PaymentSplit calldata defaultRoyalty
+    ) external onlyOwner {
+        require(ERC165Checker.supportsInterface(implementation, type(IRevenueSplitter).interfaceId));
+        revenueSplitter = RevenueSplitter(Clones.clone(implementation));
+        revenueSplitter.initialize(msg.sender, configs, defaultMint, defaultRoyalty);
+        hasSplitter = true;
     }
 
-    function addContent(uint[] calldata newSupplyLimits) external onlyOwner {
-        require(newSupplyLimits.length > 0);
-        contentCount += newSupplyLimits.length;
-        for (uint i = 0; i < newSupplyLimits.length; i++) {
-            supplyLimits.push(newSupplyLimits[i]);
-        }
+    /// Toggle paused state
+    function togglePaused() external onlyOwner {
+        paused = !paused;
     }
 
-    function setBaseURI(string calldata newBaseURI) public onlyOwner {
-        baseURI = newBaseURI;
+    /**
+    @dev See {IMintSplitERC721-setBaseURI}
+    */
+    function setBaseURI(string calldata uri) external onlyOwner {
+        projectParams.baseURI = uri;
     }
-    
-    function setContentURI(string calldata newURI, uint contentId) public onlyOwner {
-        require(contentId > 0 && contentId <= contentCount);
-        contentUriOverrides[contentId] = newURI;
+
+    /**
+    @dev See {IMintSplitERC721-setContentURI}
+    */
+    function setContentURI(string calldata uri, uint contentId) external onlyOwner {
+        contentUriOverrides[contentId] = uri;
+    }
+
+    /**
+    @dev See {IMintSplitERC721-setParams}
+    */
+    function setParams(MintSplitSharedLib.ProjectParams calldata newParams) external onlyOwner {
+        require(_checkSum(tokenLimit, newParams.editions));
+        projectParams = newParams;
+    }
+
+    /// Withdraw contract funds
+    function withdraw() external onlyOwner {
+        (bool success, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
+        require(success);
     }
 }

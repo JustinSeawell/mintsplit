@@ -90,7 +90,7 @@ function SongCard({ song, index }: SongCardProps) {
             </Box>
           </Grid>
         </Grid>
-        <Grid item mt={"2rem"}>
+        {/* <Grid item mt={"2rem"}>
           <Typography variant="subtitle2" gutterBottom>
             Primary Sale (Mint) Splits
           </Typography>
@@ -114,8 +114,8 @@ function SongCard({ song, index }: SongCardProps) {
               </TableBody>
             </Table>
           </TableContainer>
-        </Grid>
-        <Grid item mt={"2rem"}>
+        </Grid> */}
+        {/* <Grid item mt={"2rem"}>
           <Typography variant="subtitle2" gutterBottom>
             Secondary Sale (Royalty) Splits
           </Typography>
@@ -141,7 +141,7 @@ function SongCard({ song, index }: SongCardProps) {
               </TableBody>
             </Table>
           </TableContainer>
-        </Grid>
+        </Grid> */}
       </CardContent>
     </Card>
   );

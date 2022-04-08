@@ -1,37 +1,15 @@
-import { Divider, Grid, Stack, Typography } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
-import { AddressListItem } from "../../types/AddressListItem";
-import { RevenueSplitConfig } from "../../types/RevenueSplitConfig";
-import { cloneRevenueSplitConfig } from "./cloneRevenueSplit";
+import { Grid, Typography } from "@mui/material";
+import { PaymentSplitConfigStruct } from "../../contracts/types/RevenueSplitter";
 import RevenueSplitInput from "./RevenueSplitInput";
-import { MAX_MINT_PERCENTAGE } from "./config";
 
 interface MintSplitsProps {
-  revenueSplitConfigs: RevenueSplitConfig[];
-  setRevenueSplitConfigs: Dispatch<SetStateAction<RevenueSplitConfig[]>>;
-  addressListItems: AddressListItem[];
+  splitConfigs: PaymentSplitConfigStruct[];
 }
 
-function MintSplits({
-  revenueSplitConfigs,
-  setRevenueSplitConfigs,
-  addressListItems,
-}: MintSplitsProps) {
-  const setRevenueSplitConfig = (
-    newRevenueSplitConfig: RevenueSplitConfig,
-    index: number
-  ) => {
-    const newConfigs = revenueSplitConfigs.map((oldConfig) =>
-      cloneRevenueSplitConfig(oldConfig)
-    );
-
-    newConfigs[index] = newRevenueSplitConfig;
-    setRevenueSplitConfigs(newConfigs);
-  };
-
+function MintSplits({ splitConfigs }: MintSplitsProps) {
   return (
-    <Grid item xs={10} container justifyContent={"center"}>
-      <Grid item xs={10} mb={"2rem"}>
+    <Grid container justifyContent={"center"}>
+      <Grid item xs={8} textAlign={"center"}>
         <Typography variant="h6" gutterBottom>
           Primary Sale (Mints)
         </Typography>
@@ -40,20 +18,21 @@ function MintSplits({
           you... unless you decide to split the revenue with other people.
         </Typography>
       </Grid>
-      {revenueSplitConfigs.map((revenueSplitConfig, index) => (
-        <Grid key={index} container>
+      {splitConfigs.map((config, index) => (
+        <Grid key={index} container item xs={10} mt={"1.5rem"}>
           <RevenueSplitInput
             index={index}
-            revenueSplitConfig={revenueSplitConfig} // one per song
-            setRevenueSplitConfig={setRevenueSplitConfig}
-            addressListItems={addressListItems}
-            requiredSplit={MAX_MINT_PERCENTAGE}
-            buttonText="+ Add Mint Split"
+            name={"Default Mint Split"}
+            description={
+              "The default revenue split for minting all NFTs in this project."
+            }
+            buttonText={"+ Add Mint Split"}
+            splitConfig={config}
           />
         </Grid>
       ))}
 
-      <Divider sx={{ width: "100%", marginTop: "1rem" }} />
+      {/* <Divider sx={{ width: "100%", marginTop: "1rem" }} /> */}
     </Grid>
   );
 }

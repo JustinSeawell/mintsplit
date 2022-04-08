@@ -11,44 +11,33 @@ import { shortenHex } from "../../util";
 
 interface AddressSelectProps {
   index: number;
-  addressListItems: AddressListItem[];
   address: string;
-  onAddressChange: (newAddress: string, index: number) => void;
+  addresses: string[];
+  handleChange: (newAddress: string, index: number) => void;
   error: boolean;
 }
 
 function AddressSelect({
   index,
-  addressListItems,
+  addresses,
   address,
-  onAddressChange,
+  handleChange,
   error,
 }: AddressSelectProps) {
   return (
     <FormControl fullWidth error={error}>
-      <InputLabel id={`address-for-song-${index}`}>Address</InputLabel>
+      <InputLabel id={`address-for-content-${index}`}>Address</InputLabel>
       <Select
-        labelId={`address-for-song-${index}`}
+        labelId={`address-for-content-${index}`}
         id={`address-select-${index}`}
         label="Address"
         sx={{ backgroundColor: "#fff" }}
         value={address}
-        onChange={(e) => onAddressChange(e.target.value, index)}
+        onChange={(e) => handleChange(e.target.value, index)}
       >
-        {addressListItems.map(({ address, label }, index) => (
-          <MenuItem key={`addr-item-${index}`} value={address}>
-            <Typography component={"div"}>
-              {label}{" "}
-              <Typography
-                display="inline"
-                color={theme.palette.grey[600]}
-                sx={{ marginLeft: ".25rem" }}
-                fontWeight={300}
-                fontSize={".9rem"}
-              >
-                ({shortenHex(address, 4)})
-              </Typography>
-            </Typography>
+        {addresses.map((address, index) => (
+          <MenuItem key={`addr-${index}`} value={address}>
+            <Typography>{address}</Typography>
           </MenuItem>
         ))}
       </Select>

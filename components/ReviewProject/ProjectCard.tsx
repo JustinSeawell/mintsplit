@@ -6,8 +6,7 @@ import { getTokenRanges } from "../ManageRevenueSplits/getTokenRanges";
 function ProjectCard() {
   const { project } = useProject();
   const { songs } = useSongs();
-  const { name, symbol, description, artistName, mintCost, mintLimit } =
-    project;
+  const { name, symbol, description, artistName, mintCost } = project;
   const tokenRanges = getTokenRanges(songs);
   const totalNFTCount = tokenRanges[tokenRanges.length - 1][1];
   return (
@@ -35,9 +34,6 @@ function ProjectCard() {
           </Typography>
           <Typography variant="body1">
             <strong># of Songs:</strong> {songs.length}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Mint Limit:</strong> {mintLimit === 0 ? "-" : mintLimit}
           </Typography>
           <Typography variant="body1">
             <strong>Total NFTs created:</strong> {totalNFTCount}

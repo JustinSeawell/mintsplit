@@ -29,8 +29,8 @@ function RoyaltySplits({
     setRevenueSplitConfigs(newConfigs);
   };
   return (
-    <Grid item xs={10} container justifyContent={"center"}>
-      <Grid item xs={10} mb={"2rem"}>
+    <>
+      <Grid item xs={8} mb={"2rem"}>
         <Typography variant="h6" gutterBottom>
           Secondary Sale (Royalties)
         </Typography>
@@ -66,7 +66,7 @@ function RoyaltySplits({
           </Grid>
         </Alert>
       </Grid>
-      {revenueSplitConfigs.map((revenueSplitConfig, index) => (
+      {/* {revenueSplitConfigs.map((revenueSplitConfig, index) => (
         <Grid key={index} container>
           <RevenueSplitInput
             index={index}
@@ -77,10 +77,10 @@ function RoyaltySplits({
             buttonText="+ Add Royalty Split"
           />
         </Grid>
-      ))}
+      ))} */}
 
       <Divider sx={{ width: "100%", marginTop: "1rem" }} />
-    </Grid>
+    </>
   );
 }
 

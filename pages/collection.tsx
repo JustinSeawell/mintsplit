@@ -14,9 +14,8 @@ import useNFTContract from "../hooks/useNFTContract";
 
 /**
  * TODO:
- * - cover error scenario (ex: minting fails)
  * - Check to make sure contract exists in nft factory project
- *
+ * - Send to 404 if cid is invalid
  */
 function Collection() {
   const router = useRouter();

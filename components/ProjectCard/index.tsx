@@ -22,11 +22,18 @@ function ProjectCard({ address }: ProjectCardProps) {
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { data } = useCollectionData(address);
-  const { name, totalSupply, totalSupplyLimit, maxLimit } = { ...data };
-  const totalSupplyLimitNum = totalSupplyLimit?.toNumber();
-  const maxLimitNum = maxLimit?.toNumber();
+  const { name } = { ...data };
+  // const totalSupplyLimitNum = totalSupplyLimit?.toNumber();
+  // const maxLimitNum = maxLimit?.toNumber();
 
-  if (!data) return <CircularProgress />;
+  if (!data)
+    return (
+      <Card>
+        <CardContent>
+          <CircularProgress />
+        </CardContent>
+      </Card>
+    );
 
   return (
     <Card sx={{ textAlign: "left" }}>
@@ -35,13 +42,13 @@ function ProjectCard({ address }: ProjectCardProps) {
           {name}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Minted {totalSupply.toString()} / {totalSupplyLimit.toString()}
+          {/* Minted {totalSupply.toString()} / {totalSupplyLimit.toString()} */}
         </Typography>
         <Grid mt={"1.5rem"}>
           <Typography variant="subtitle2" gutterBottom>
             Space
           </Typography>
-          <Grid item xs={8}>
+          {/* <Grid item xs={8}>
             <LinearProgress
               variant="determinate"
               color="secondary"
@@ -51,7 +58,7 @@ function ProjectCard({ address }: ProjectCardProps) {
           </Grid>
           <Typography variant="caption">
             {totalSupplyLimitNum} of {maxLimitNum} NFTs used
-          </Typography>
+          </Typography> */}
         </Grid>
         <Snackbar
           open={snackbarOpen}

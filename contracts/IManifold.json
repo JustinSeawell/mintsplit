@@ -26,7 +26,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.12+commit.f00d7308\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getRoyalties\",\"outputs\":[{\"internalType\":\"address payable[]\",\"name\":\"\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Royalty interface for creator core classes\",\"kind\":\"dev\",\"methods\":{\"getRoyalties(uint256)\":{\"details\":\"Get royalites of a token.  Returns list of receivers and basisPoints  bytes4(keccak256('getRoyalties(uint256)')) == 0xbb3bafd6  => 0xbb3bafd6 = 0xbb3bafd6\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"@manifoldxyz/royalty-registry-solidity/contracts/specs/IManifold.sol\":\"IManifold\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@manifoldxyz/royalty-registry-solidity/contracts/specs/IManifold.sol\":{\"keccak256\":\"0x2415afdf23699b1e50e1a9f8ad7c3550b5e718e7707db5f6648fbdee93afbe97\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5dc2f01bee50baf2bed6169573e3fe1b990bb876b14c30f201104ebc2f456da3\",\"dweb:/ipfs/Qmcd7Mhi75JsPVGkYjm3AJHJ1iU4CqwGYpc3m8GjSBnrah\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"}],\"name\":\"getRoyalties\",\"outputs\":[{\"internalType\":\"address payable[]\",\"name\":\"\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Royalty interface for creator core classes\",\"kind\":\"dev\",\"methods\":{\"getRoyalties(uint256)\":{\"details\":\"Get royalites of a token.  Returns list of receivers and basisPoints  bytes4(keccak256('getRoyalties(uint256)')) == 0xbb3bafd6  => 0xbb3bafd6 = 0xbb3bafd6\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"@manifoldxyz/royalty-registry-solidity/contracts/specs/IManifold.sol\":\"IManifold\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@manifoldxyz/royalty-registry-solidity/contracts/specs/IManifold.sol\":{\"keccak256\":\"0x2415afdf23699b1e50e1a9f8ad7c3550b5e718e7707db5f6648fbdee93afbe97\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5dc2f01bee50baf2bed6169573e3fe1b990bb876b14c30f201104ebc2f456da3\",\"dweb:/ipfs/Qmcd7Mhi75JsPVGkYjm3AJHJ1iU4CqwGYpc3m8GjSBnrah\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -410,11 +410,11 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.8.12+commit.f00d7308.Emscripten.clang"
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2022-03-09T22:30:11.255Z",
+  "updatedAt": "2022-03-29T16:53:00.243Z",
   "devdoc": {
     "details": "Royalty interface for creator core classes",
     "kind": "dev",

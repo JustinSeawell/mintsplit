@@ -1,13 +1,14 @@
 import useSWR from "swr";
-import { MintSplitFactoryV1 } from "../contracts/types";
+import { MintSplitFactory } from "../contracts/types";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
 import useMintSplitFactory from "./useMintSplitFactory";
 
-function getProjectsByUser(contract: MintSplitFactoryV1, userAddress: string) {
+function getProjectsByUser(contract: MintSplitFactory, userAddress: string) {
   return async (_: string, address: string) => {
-    const userProjects = await contract.getUserProjects(userAddress);
+    const filter = contract.filters.ProjectCreated(null, userAddress);
+    const results = await contract.queryFilter(filter);
 
-    return userProjects;
+    return results.map(({ args }) => args.project);
   };
 }
 

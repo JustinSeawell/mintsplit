@@ -1,36 +1,35 @@
-import { formatEther } from "@ethersproject/units";
 import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
+  CircularProgress,
   Container,
+  Divider,
   Grid,
-  Link,
-  Typography,
+  Tab,
+  Tabs,
 } from "@mui/material";
-import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/dist/client/router";
 import Head from "next/head";
+import { useState } from "react";
 import Layout from "../components/Layout";
+import ManageRevenueSplits from "../components/ManageRevenueSplits";
+import ProjectOverview from "../components/ProjectOverview";
 import useCollectionData from "../hooks/useCollectionData";
-import useRevenueData from "../hooks/useRevenueData";
-import useRevenueSplitter from "../hooks/useRevenueSplitter";
-import { formatEtherscanLink } from "../util";
+
+const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 function Project() {
   const router = useRouter();
+  const [tab, setTab] = useState(0);
+  const [addingSplits, setAddingSplits] = useState(false);
   const { cid } = router.query;
   const contractAddress = cid as string;
-  const { account } = useWeb3React();
   const { data: collectionData } = useCollectionData(contractAddress);
-  const { name, revenueSplitterAddr } = { ...collectionData };
-  const revenueSplitter = useRevenueSplitter(revenueSplitterAddr);
-  const { data: revenueData } = useRevenueData(revenueSplitterAddr, account);
-  const { totalBalance, userBalance } = { ...revenueData };
+  const { name, revenueSplitter } = {
+    ...collectionData,
+  };
+  const hasSplitter = revenueSplitter != EMPTY_ADDRESS;
 
-  const withdrawFunds = async () => {
-    await revenueSplitter.release(account, { from: account });
+  const handleChange = (event: React.SyntheticEvent, newTab: number) => {
+    setTab(newTab);
   };
 
   return (
@@ -41,60 +40,50 @@ function Project() {
       </Head>
       <Layout>
         <section>
-          <Container maxWidth="lg" sx={{ textAlign: "left" }}>
-            <Typography variant="h4" gutterBottom>
-              {name}
-            </Typography>
-            <Grid sx={{ mb: "1rem" }}>
-              <Link
-                href={formatEtherscanLink("Account", [4, contractAddress])}
-                target={"_blank"}
+          {!collectionData && (
+            <Container maxWidth="lg">
+              <CircularProgress />
+            </Container>
+          )}
+          {collectionData && (
+            <Container maxWidth="lg" sx={{ textAlign: "left" }}>
+              <Grid
+                container
+                marginX={"auto"}
+                justifyContent={"center"}
+                item
+                xs={12}
               >
-                View On Etherscan
-              </Link>
-            </Grid>
-            <Grid container marginX={"auto"} justifyContent={"center"}>
-              <Grid container item spacing={3}>
-                <Grid item xs={4}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="subtitle2">Your Balance</Typography>
-                      <Typography variant="h2">
-                        {formatEther(userBalance ?? 0)} Ξ
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        variant="contained"
-                        size="large"
-                        color="secondary"
-                        onClick={withdrawFunds}
-                      >
-                        Withdraw
-                      </Button>
-                    </CardActions>
-                  </Card>
+                {/* <Grid container item spacing={4}> */}
+                <Grid container item xs={12}>
+                  <Tabs value={tab} onChange={handleChange}>
+                    <Tab label="Project" />
+                    <Tab label="Revenue Splits" />
+                    <Tab label="Content" />
+                    <Tab label="Settings" />
+                  </Tabs>
+                  <Divider sx={{ width: "100%" }} />
                 </Grid>
-                <Grid item xs={4}>
-                  <Card sx={{ height: "100%" }}>
-                    <CardContent sx={{ height: "100%" }}>
-                      <Typography variant="subtitle2">Total Balance</Typography>
-                      <Grid
-                        container
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                        height={"100%"}
-                      >
-                        <Typography variant="h2" fontSize={"3rem"}>
-                          {formatEther(totalBalance ?? 0)} Ξ
-                        </Typography>
-                      </Grid>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                {/* {tab == 0 && (
+                    <ProjectOverview
+                      collectionData={collectionData}
+                      hasSplitter={hasSplitter}
+                      setTab={setTab}
+                    />
+                  )} */}
+                {/* {tab == 1 && (
+                    <ManageRevenueSplits
+                      hasSplitter={hasSplitter}
+                      revenueSplitter={revenueSplitter}
+                      addingSplits={addingSplits}
+                      setAddingSplits={setAddingSplits}
+                    />
+                  )} */}
+                {/* {tab == 2 && <div>Content</div>} */}
+                {/* </Grid> */}
               </Grid>
-            </Grid>
-          </Container>
+            </Container>
+          )}
         </section>
       </Layout>
     </>

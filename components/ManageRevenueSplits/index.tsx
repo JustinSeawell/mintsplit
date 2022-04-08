@@ -1,132 +1,112 @@
+import { LoadingButton } from "@mui/lab";
 import { Alert, Grid, Stack, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
-import { useEffect, useMemo, useState } from "react";
+import { BigNumber } from "ethers";
+import { useEffect } from "react";
 import { useRevenueSplits } from "../../contexts/RevenueSplit";
-import { useSongs } from "../../contexts/Songs";
-import { AddressListItem } from "../../types/AddressListItem";
-import {
-  RevenueSplit,
-  RevenueSplitConfig,
-} from "../../types/RevenueSplitConfig";
-import { convertToBps } from "./convertToBps";
-import { getTokenRanges } from "./getTokenRanges";
+import { PaymentSplitConfigStruct } from "../../contracts/types/RevenueSplitter";
+import useRevenueData from "../../hooks/useRevenueData";
 import Addresses from "./Addresses";
-import { DEFAULT_ROYALTY_PERCENTAGE, MAX_MINT_PERCENTAGE } from "./config";
 import MintSplits from "./MintSplits";
-import RoyaltySplits from "./RoyaltySplits";
-import SetupNav from "../SetupNav";
 
 interface ManageRevenueSplitProps {
-  onSuccess: () => void;
-  handleBack: () => void;
+  hasSplitter: boolean;
+  revenueSplitter: string;
+  addingSplits: boolean;
+  setAddingSplits: (state: boolean) => void;
 }
 
+/**
+ * TODO:
+ * - pull existing revenue split data from blockchain
+ * - display on UI
+ * - handle updates
+ * - post updates
+ */
 function ManageRevenueSplits({
-  onSuccess,
-  handleBack,
+  hasSplitter,
+  revenueSplitter,
+  addingSplits,
+  setAddingSplits,
 }: ManageRevenueSplitProps) {
+  const { account, library } = useWeb3React();
+  const { data: revenueData } = useRevenueData(revenueSplitter, account);
   const { mintSplits, setMintSplits, royaltySplits, setRoyaltySplits } =
     useRevenueSplits();
-  const { account, library } = useWeb3React();
   const isConnected = typeof account === "string" && !!library;
-  const { songs } = useSongs();
-  const tokenRanges = useMemo(() => getTokenRanges(songs), [songs]);
-
-  const defaultAddrListItem = useMemo(
-    () =>
-      ({
-        label: "You",
-        address: account,
-      } as AddressListItem),
-    [account]
-  );
-
-  // Setting here to avoid UI flicker
-  const [addressListItems, setAddressListItems] = useState<AddressListItem[]>(
-    isConnected ? [defaultAddrListItem] : []
-  );
 
   useEffect(() => {
-    if (isConnected) setAddressListItems([defaultAddrListItem]);
-  }, [defaultAddrListItem, isConnected]);
+    if (hasSplitter || !addingSplits) return;
 
-  useEffect(() => {
-    // on first render, add a 100% artist MINT split for each song
-    if (!account) return;
+    const defaultMintSplit = {
+      contentId: 0,
+      isMint: true,
+      split: {
+        recipients: [account],
+        bps: [BigNumber.from(10000)],
+      },
+    } as PaymentSplitConfigStruct;
 
-    const defaultSplit = {
-      recipient: account, // artist
-      bps: convertToBps(MAX_MINT_PERCENTAGE),
-    } as RevenueSplit;
+    setMintSplits([defaultMintSplit]);
 
-    const splits = tokenRanges.map(
-      (tokenRange) =>
-        ({ tokenRange, splits: [defaultSplit] } as RevenueSplitConfig)
-    );
+    const defaultRoyaltySplit = {
+      contentId: 0,
+      isMint: false,
+      split: {
+        recipients: [account],
+        bps: [BigNumber.from(1100)],
+      },
+    } as PaymentSplitConfigStruct;
 
-    setMintSplits(splits);
-  }, [account, setMintSplits, tokenRanges]);
-
-  useEffect(() => {
-    // on first render, add a 10% artist ROYALTY split for each song
-    if (!account) return;
-
-    const defaultSplit = {
-      recipient: account, // artist
-      bps: convertToBps(DEFAULT_ROYALTY_PERCENTAGE),
-    } as RevenueSplit;
-
-    const splits = tokenRanges.map(
-      (tokenRange) =>
-        ({ tokenRange, splits: [defaultSplit] } as RevenueSplitConfig)
-    );
-
-    setRoyaltySplits(splits);
-  }, [account, setRoyaltySplits, tokenRanges]);
+    setRoyaltySplits([defaultRoyaltySplit]);
+  }, [account, addingSplits, hasSplitter, setMintSplits, setRoyaltySplits]);
 
   if (!isConnected)
     return (
-      <Grid item xs={8} m={"auto"}>
+      <Grid item xs={6} m={"auto"}>
         <Alert severity="warning">
           Please connect to MetaMask to continue.
         </Alert>
       </Grid>
     );
 
-  return (
-    <>
-      <Typography variant="h4" gutterBottom>
-        Split Revenue
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        Split revenue from mints and royalties.
-      </Typography>
-      <Stack spacing={12} mt={"3rem"}>
-        <Grid container justifyContent={"center"}>
-          <Addresses
-            addressListItems={addressListItems}
-            setAddressListItems={setAddressListItems}
-          />
-        </Grid>
-        <Grid container justifyContent={"center"}>
-          <MintSplits
-            revenueSplitConfigs={mintSplits}
-            setRevenueSplitConfigs={setMintSplits}
-            addressListItems={addressListItems}
-          />
-        </Grid>
-        <Grid container justifyContent={"center"}>
-          <RoyaltySplits
-            revenueSplitConfigs={royaltySplits}
-            setRevenueSplitConfigs={setRoyaltySplits}
-            addressListItems={addressListItems}
-          />
-        </Grid>
-      </Stack>
-      <Grid item xs={10} mt={"2rem"} marginX={"auto"}>
-        <SetupNav handleNext={onSuccess} handleBack={handleBack} />
+  if (!hasSplitter && !addingSplits) {
+    return (
+      <Grid item xs={8} marginX={"auto"} textAlign={"center"}>
+        <Stack spacing={6}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Add Splits
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                100% of your NFT sale revenue is going to you. Click the button
+                below to split it with your collaborators.
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <LoadingButton
+                variant="contained"
+                color="secondary"
+                size="large"
+                onClick={() => setAddingSplits(true)}
+              >
+                Split Revenue
+              </LoadingButton>
+            </Grid>
+          </Grid>
+        </Stack>
       </Grid>
-    </>
+    );
+  }
+
+  return (
+    <Grid item xs={12} marginX={"auto"} textAlign={"center"}>
+      <Stack spacing={8}>
+        <Addresses />
+        <MintSplits splitConfigs={mintSplits} />
+      </Stack>
+    </Grid>
   );
 }
 

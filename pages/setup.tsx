@@ -12,7 +12,7 @@ const steps = [
   "Upload Content",
   "Edit Content",
   "Add Details",
-  "Split Revenue",
+  // "Split Revenue",
   "Review & Launch",
 ];
 
@@ -54,7 +54,7 @@ function Setup() {
       <Layout>
         <Container maxWidth="lg">
           <section>
-            <Stepper activeStep={activeStep}>
+            <Stepper activeStep={activeStep} sx={{ mt: "2rem" }}>
               {steps.map((label) => {
                 return (
                   <Step key={label}>
@@ -71,13 +71,7 @@ function Setup() {
               {activeStep === 2 && (
                 <ManageProject onSuccess={handleNext} handleBack={handleBack} />
               )}
-              {activeStep === 3 && (
-                <ManageRevenueSplits
-                  onSuccess={handleNext}
-                  handleBack={handleBack}
-                />
-              )}
-              {activeStep === 4 && <ReviewProject />}
+              {activeStep === 3 && <ReviewProject />}
             </Grid>
           </section>
         </Container>

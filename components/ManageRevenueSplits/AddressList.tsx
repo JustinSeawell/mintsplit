@@ -1,46 +1,46 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Chip,
-  Grid,
-  Stack,
-  TableSortLabel,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { isAddress } from "ethers/lib/utils";
+import { useEffect, useState } from "react";
+import { useRevenueSplits } from "../../contexts/RevenueSplit";
 import theme from "../../theme";
-import { AddressListItem } from "../../types/AddressListItem";
 import { shortenHex } from "../../util";
 
-interface AddressListProps {
-  addresses: AddressListItem[];
-  setAddresses: Dispatch<SetStateAction<AddressListItem[]>>;
-}
+interface AddressListProps {}
 
-function AddressList({ addresses, setAddresses }: AddressListProps) {
-  const [label, setLabel] = useState("");
+function AddressList({}: AddressListProps) {
+  const { account } = useWeb3React();
   const [address, setAddress] = useState("");
-  const [addressError, setAddressError] = useState(false);
+  const [addressError, setAddressError] = useState("");
+  const { addresses, setAddresses } = useRevenueSplits();
+
+  useEffect(() => {
+    if (account && addresses.length == 0) {
+      setAddresses([account, ...addresses]);
+    }
+  });
 
   const clearInputs = () => {
-    setLabel("");
     setAddress("");
   };
 
   const handleAddressSubmit = () => {
-    // TODO: Add validation
-    setAddresses([...addresses, { label, address } as AddressListItem]);
+    setAddresses([...addresses, address]);
     clearInputs();
   };
 
   useEffect(() => {
-    const isDuplicateAddr = (address: string) =>
-      addresses.map(({ address }) => address).includes(address);
+    if (address.length == 0) {
+      setAddressError("");
+      return;
+    }
 
-    setAddressError(isDuplicateAddr(address));
+    setAddressError(!isAddress(address) ? "Please enter a valid address" : "");
+
+    const isDuplicateAddr = (address: string) => addresses.includes(address);
+
+    if (isDuplicateAddr(address))
+      setAddressError("Duplicate addresses not allowed");
   }, [address, addresses]);
 
   return (
@@ -49,26 +49,20 @@ function AddressList({ addresses, setAddresses }: AddressListProps) {
         <Grid item xs={6}>
           <Stack spacing={2}>
             <TextField
-              label="Name"
-              helperText="ex: your producer's name"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-            />
-            <TextField
               label="Address"
               helperText={
-                addressError
-                  ? "Duplicate addresses not allowed"
+                !!addressError
+                  ? addressError
                   : "ex: 0x4342BB07A9094De14aA9e37Ab7cd1DeE552AEd30"
               }
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              error={addressError}
+              error={!!addressError}
             />
             <Button
               variant="outlined"
               onClick={handleAddressSubmit}
-              disabled={addressError}
+              disabled={!!addressError || address.length == 0}
             >
               + Add Address
             </Button>
@@ -82,18 +76,21 @@ function AddressList({ addresses, setAddresses }: AddressListProps) {
               </Typography>
             )}
             {addresses.length > 0 &&
-              addresses.map(({ label, address }, index) => (
+              addresses.map((address, index) => (
                 <Box
                   key={`addr-${index}`}
                   sx={{
                     backgroundColor: theme.palette.grey.A100,
                     borderRadius: 2,
                     padding: "1rem",
+                    textAlign: "center",
                   }}
                 >
-                  <Typography variant="subtitle1">
-                    <strong>{label}</strong>
-                  </Typography>
+                  {account == address && (
+                    <Typography variant="subtitle1">
+                      <strong>You</strong>
+                    </Typography>
+                  )}
                   <Typography fontWeight={300}>
                     {shortenHex(address, 4)}
                   </Typography>

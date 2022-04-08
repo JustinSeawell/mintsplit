@@ -62,7 +62,6 @@ function Projects() {
                     Create Project
                   </LoadingButton>
                 </Grid>
-
                 <Grid container marginX={"auto"} justifyContent={"center"}>
                   <Grid container item xs={10} spacing={3} mt={"1rem"}>
                     {projects &&

@@ -13,7 +13,7 @@ function ReviewProject() {
   const [loadingMessage, setLoadingMessage] = useState<string>(null);
   const { data: packages } = usePackages();
   const [package1] = packages ?? [];
-  const [limit, fee] = package1 ?? [];
+  const { fee } = package1;
 
   if (loadingMessage)
     return (

@@ -1,28 +1,43 @@
+import { useWeb3React } from "@web3-react/core";
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
+import { PaymentSplitConfigStruct } from "../contracts/types/RevenueSplitter";
 import { RevenueSplitConfig } from "../types/RevenueSplitConfig";
 
 interface RevenueSplitContextValue {
-  mintSplits: RevenueSplitConfig[];
-  setMintSplits: Dispatch<SetStateAction<RevenueSplitConfig[]>>;
-  royaltySplits: RevenueSplitConfig[];
-  setRoyaltySplits: Dispatch<SetStateAction<RevenueSplitConfig[]>>;
+  addresses: string[];
+  setAddresses: Dispatch<SetStateAction<string[]>>;
+  mintSplits: PaymentSplitConfigStruct[];
+  setMintSplits: Dispatch<SetStateAction<PaymentSplitConfigStruct[]>>;
+  royaltySplits: PaymentSplitConfigStruct[];
+  setRoyaltySplits: Dispatch<SetStateAction<PaymentSplitConfigStruct[]>>;
 }
 
 const RevenueSplitContext = createContext<RevenueSplitContextValue>(null);
 
 export const RevenueSplitProvider = ({ children }) => {
-  const [mintSplits, setMintSplits] = useState<RevenueSplitConfig[]>([]);
-  const [royaltySplits, setRoyaltySplits] = useState<RevenueSplitConfig[]>([]);
+  const [addresses, setAddresses] = useState([]);
+  const [mintSplits, setMintSplits] = useState<PaymentSplitConfigStruct[]>([]);
+  const [royaltySplits, setRoyaltySplits] = useState<
+    PaymentSplitConfigStruct[]
+  >([]);
 
   return (
     <RevenueSplitContext.Provider
-      value={{ mintSplits, setMintSplits, royaltySplits, setRoyaltySplits }}
+      value={{
+        addresses,
+        setAddresses,
+        mintSplits,
+        setMintSplits,
+        royaltySplits,
+        setRoyaltySplits,
+      }}
     >
       {children}
     </RevenueSplitContext.Provider>

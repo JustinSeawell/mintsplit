@@ -75,17 +75,19 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
               setProject({ ...project, description: e.target.value })
             }
           />
-          <TextField
-            label="Artist Name"
-            variant="outlined"
-            fullWidth
-            value={artistName}
-            onChange={(e) =>
-              setProject({ ...project, artistName: e.target.value })
-            }
-          />
           <Grid container>
-            <Grid item xs mr={"1rem"}>
+            <Grid item xs={9} mr={"1rem"}>
+              <TextField
+                label="Artist Name"
+                variant="outlined"
+                fullWidth
+                value={artistName}
+                onChange={(e) =>
+                  setProject({ ...project, artistName: e.target.value })
+                }
+              />
+            </Grid>
+            <Grid item xs>
               <TextField
                 id="cost-per-mint"
                 label="Mint Price"
@@ -105,27 +107,6 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
                   setProject({
                     ...project,
                     mintCost: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </Grid>
-            <Grid item xs>
-              <TextField
-                id="mint-limit"
-                label="Mint Limit (optional)"
-                helperText="# of NFTs allowed to mint per wallet"
-                variant="outlined"
-                type={"number"}
-                fullWidth
-                value={mintLimit || ""}
-                InputProps={{
-                  inputMode: "numeric",
-                  inputProps: { min: 0 },
-                }}
-                onChange={(e) =>
-                  setProject({
-                    ...project,
-                    mintLimit: parseInt(e.target.value),
                   })
                 }
               />

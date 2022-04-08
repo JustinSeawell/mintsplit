@@ -1,9 +1,9 @@
 import useSWR from "swr";
-import { MintSplitFactoryV1 } from "../contracts/types";
+import { MintSplitFactory } from "../contracts/types";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
 import useMintSplitFactory from "./useMintSplitFactory";
 
-function getPackages(contract: MintSplitFactoryV1) {
+function getPackages(contract: MintSplitFactory) {
   return async (_: string, address: string) => {
     const packages = await contract.getPackages();
 

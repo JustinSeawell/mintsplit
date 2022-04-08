@@ -32,7 +32,6 @@ function ManageSongs({ onSuccess, handleBack }: ManageSongsProps) {
   );
   const { data: packages } = usePackages();
   const [package1] = packages ?? [];
-  const [limit] = package1 ?? [];
 
   const handleNext = () => {
     // TODO: Validate input
@@ -73,7 +72,7 @@ function ManageSongs({ onSuccess, handleBack }: ManageSongsProps) {
           </LoadingButton>
         </Label>
         <Grid item xs={4}>
-          <SpaceCard used={nftCount} limit={limit?.toNumber()} />
+          <SpaceCard used={nftCount} limit={package1?.limit?.toNumber() - 1} />
         </Grid>
         <Divider sx={{ width: "100%", marginTop: "1rem" }} />
       </Grid>

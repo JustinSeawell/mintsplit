@@ -1,15 +1,20 @@
 const MintSplitERC721 = artifacts.require("MintSplitERC721");
 const RevenueSplitter = artifacts.require("RevenueSplitter");
-const MintSplitFactoryV1 = artifacts.require("MintSplitFactoryV1");
-const MintSplitSharedLibV1 = artifacts.require("MintSplitSharedLibV1");
+const MintSplitFactory = artifacts.require("MintSplitFactory");
+const MintSplitSharedLib = artifacts.require("MintSplitSharedLib");
 
 module.exports = function (_deployer) {
   const DEPLOYMENT_FEE = web3.utils.toWei(".19", "ether");
-  const LIMIT = 2000;
+  const LIMIT = 2001;
+
+  const defaultPackage = {
+    fee: DEPLOYMENT_FEE,
+    limit: LIMIT,
+  };
 
   // TODO: Figure out why this doesn't work in async mode
 
-  _deployer.deploy(MintSplitSharedLibV1);
+  _deployer.deploy(MintSplitSharedLib);
 
   // NOTE: You have to return the promises or it doesn't work :/
   // #1
@@ -18,11 +23,10 @@ module.exports = function (_deployer) {
     _deployer.deploy(RevenueSplitter).then(() =>
       // #3
       _deployer.deploy(
-        MintSplitFactoryV1,
+        MintSplitFactory,
         MintSplitERC721.address,
         RevenueSplitter.address,
-        DEPLOYMENT_FEE,
-        LIMIT
+        defaultPackage
       )
     )
   );

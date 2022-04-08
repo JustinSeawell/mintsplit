@@ -8,119 +8,124 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useSongs } from "../../contexts/Songs";
 import theme from "../../theme";
-import { AddressListItem } from "../../types/AddressListItem";
-import {
-  RevenueSplit,
-  RevenueSplitConfig,
-} from "../../types/RevenueSplitConfig";
+
 import AddressSelect from "./AddressSelect";
-import { cloneRevenueSplitConfig } from "./cloneRevenueSplit";
 import { convertToBps, convertToPercentage } from "./convertToBps";
 import DeleteForever from "@mui/icons-material/DeleteForever";
+import Flag from "@mui/icons-material/Flag";
+import { PaymentSplitConfigStruct } from "../../contracts/types/RevenueSplitter";
+import { useRevenueSplits } from "../../contexts/RevenueSplit";
+import { clonePaymentSplitConfig } from "./clonePaymentSplitConfig";
+import { BigNumber } from "ethers";
 
 interface RevenueSplitInputProps {
   index: number;
-  revenueSplitConfig: RevenueSplitConfig;
-  setRevenueSplitConfig: (
-    newRevenueSplit: RevenueSplitConfig,
-    index: number
-  ) => void;
-  addressListItems: AddressListItem[];
+  name: string;
   buttonText?: string;
-  maxSplit?: number;
-  requiredSplit?: number;
+  description?: string;
+  splitConfig: PaymentSplitConfigStruct;
 }
 
 function RevenueSplitInput({
   index,
-  revenueSplitConfig,
-  setRevenueSplitConfig,
-  addressListItems,
+  name,
   buttonText,
-  maxSplit,
-  requiredSplit,
+  description,
+  splitConfig,
 }: RevenueSplitInputProps) {
-  const { songs } = useSongs();
-  const { name, audio } = songs[index];
-  const { name: fileName } = audio;
-  const { splits } = revenueSplitConfig;
-  const [isValidSplit, setIsValidSplit] = useState(false);
-  const [invalidAddresses, setInvalidAddresses] = useState(false);
-  const allAddressesInUse = splits.length >= addressListItems.length;
+  const { split, contentId } = splitConfig;
+  const { recipients, bps } = split;
+  const {
+    addresses,
+    mintSplits,
+    royaltySplits,
+    setMintSplits,
+    setRoyaltySplits,
+  } = useRevenueSplits();
+  const allAddressesInUse = recipients.length == addresses.length;
+  const isDefault = contentId === 0;
+  const isLastDefaultSplit = isDefault && recipients.length == 1;
+  // const [isValidSplit, setIsValidSplit] = useState(false);
+  // const [invalidAddresses, setInvalidAddresses] = useState(false);
+  // const allAddressesInUse = splits.length >= addressListItems.length;
 
   const handleAddressChange = (newAddress: string, splitIndex: number) => {
-    const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
-    clonedConfig.splits[splitIndex].recipient = newAddress;
-    setRevenueSplitConfig(clonedConfig, index);
+    // const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
+    // clonedConfig.splits[splitIndex].recipient = newAddress;
+    // setRevenueSplitConfig(clonedConfig, index);
   };
 
-  const handleSharesChange = (newShares: number, splitIndex: number) => {
-    if (newShares === NaN) return;
+  // const handleSharesChange = (newShares: number, splitIndex: number) => {
+  //   if (newShares === NaN) return;
 
-    const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
-    clonedConfig.splits[splitIndex].bps = convertToBps(newShares);
-    setRevenueSplitConfig(clonedConfig, index);
-  };
+  //   const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
+  //   clonedConfig.splits[splitIndex].bps = convertToBps(newShares);
+  //   setRevenueSplitConfig(clonedConfig, index);
+  // };
 
-  const findRemainingAddresses = () =>
-    addressListItems.filter(
-      ({ address }) =>
-        !splits.map(({ recipient }) => recipient).includes(address)
+  const setSplitConfig = (
+    newConfig: PaymentSplitConfigStruct,
+    index: number
+  ) => {
+    const { isMint } = newConfig;
+    const configs = isMint ? mintSplits : royaltySplits;
+    const newConfigs = configs.map((oldConfig) =>
+      clonePaymentSplitConfig(oldConfig)
     );
+    newConfigs[index] = newConfig;
+
+    isMint ? setMintSplits(newConfigs) : setRoyaltySplits(newConfigs);
+  };
 
   const findRemainingAddress = () =>
-    addressListItems.find(
-      ({ address }) =>
-        !splits.map(({ recipient }) => recipient).includes(address)
-    );
+    addresses.find((address) => !recipients.includes(address));
 
   const addSplit = () => {
-    const { address: recipient } = findRemainingAddress();
-    const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
-    clonedConfig.splits.push({ bps: 0, recipient });
-    setRevenueSplitConfig(clonedConfig, index);
+    const address = findRemainingAddress();
+    const clonedConfig = clonePaymentSplitConfig(splitConfig);
+    clonedConfig.split.recipients.push(address);
+    clonedConfig.split.bps.push(BigNumber.from(0));
+    setSplitConfig(clonedConfig, index);
   };
 
-  const removeSplit = (splitIndex: number) => {
-    const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
-    clonedConfig.splits.splice(splitIndex, 1);
-    setRevenueSplitConfig(clonedConfig, index);
-  };
+  // const removeSplit = (splitIndex: number) => {
+  //   const clonedConfig = cloneRevenueSplitConfig(revenueSplitConfig);
+  //   clonedConfig.splits.splice(splitIndex, 1);
+  //   setRevenueSplitConfig(clonedConfig, index);
+  // };
 
-  useEffect(() => {
-    if (!maxSplit) return;
+  // useEffect(() => {
+  //   if (!maxSplit) return;
 
-    const sharesNotGreaterThanMax = (splits: RevenueSplit[]) =>
-      splits.map(({ bps }) => bps).reduce((sum, bps) => sum + bps, 0) <=
-      convertToBps(maxSplit);
+  //   const sharesNotGreaterThanMax = (splits: RevenueSplit[]) =>
+  //     splits.map(({ bps }) => bps).reduce((sum, bps) => sum + bps, 0) <=
+  //     convertToBps(maxSplit);
 
-    setIsValidSplit(sharesNotGreaterThanMax(splits));
-  }, [maxSplit, splits]);
+  //   setIsValidSplit(sharesNotGreaterThanMax(splits));
+  // }, [maxSplit, splits]);
 
-  useEffect(() => {
-    if (!requiredSplit) return;
+  // useEffect(() => {
+  //   if (!requiredSplit) return;
 
-    const sharesEqualToRequired = (splits: RevenueSplit[]) =>
-      splits.map(({ bps }) => bps).reduce((sum, bps) => sum + bps, 0) ===
-      convertToBps(requiredSplit);
+  //   const sharesEqualToRequired = (splits: RevenueSplit[]) =>
+  //     splits.map(({ bps }) => bps).reduce((sum, bps) => sum + bps, 0) ===
+  //     convertToBps(requiredSplit);
 
-    setIsValidSplit(sharesEqualToRequired(splits));
-  }, [requiredSplit, splits]);
+  //   setIsValidSplit(sharesEqualToRequired(splits));
+  // }, [requiredSplit, splits]);
 
-  useEffect(() => {
-    const hasDupAddresses = (splits: RevenueSplit[]) =>
-      splits.filter(
-        ({ recipient }, index) =>
-          splits
-            .map(({ recipient: recipient2 }) => recipient2)
-            .indexOf(recipient) !== index
-      ).length > 0;
+  // useEffect(() => {
+  //   const hasDupAddresses = (splits: RevenueSplit[]) =>
+  //     splits.filter(
+  //       ({ recipient }, index) =>
+  //         splits
+  //           .map(({ recipient: recipient2 }) => recipient2)
+  //           .indexOf(recipient) !== index
+  //     ).length > 0;
 
-    setInvalidAddresses(hasDupAddresses(splits));
-  }, [maxSplit, splits]);
+  //   setInvalidAddresses(hasDupAddresses(splits));
+  // }, [maxSplit, splits]);
 
   return (
     <>
@@ -134,8 +139,99 @@ function RevenueSplitInput({
           textAlign: "left",
         }}
       >
-        <Stack spacing={1}>
-          <Typography variant="h6" color={theme.palette.primary.light}>
+        <Stack spacing={3}>
+          <Grid item>
+            <Grid container>
+              <Typography
+                variant="h6"
+                color={theme.palette.primary.light}
+                gutterBottom
+                mr={".5rem"}
+              >
+                {name}
+              </Typography>
+              {isDefault && <Flag color={"disabled"} />}
+            </Grid>
+            {description && (
+              <Grid item xs={6}>
+                <Typography
+                  variant="body2"
+                  color={theme.palette.grey[600]}
+                  gutterBottom
+                >
+                  {description}
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+          <Grid container item>
+            <Button
+              variant="outlined"
+              disabled={allAddressesInUse}
+              onClick={addSplit}
+              sx={{ marginRight: "1rem" }}
+            >
+              {buttonText ?? "+ Add Revenue Split"}
+            </Button>
+            {allAddressesInUse && (
+              <Alert severity="warning">
+                Add an address above to enable splitting
+              </Alert>
+            )}
+          </Grid>
+          {recipients.map((address, splitIndex) => (
+            <Grid key={`split-${splitIndex}`} container>
+              <Grid item xs mr={"1rem"}>
+                <AddressSelect
+                  index={splitIndex}
+                  address={address}
+                  addresses={addresses}
+                  handleChange={handleAddressChange}
+                  error={false}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Split"
+                  variant="outlined"
+                  type={"number"}
+                  fullWidth
+                  InputProps={{
+                    inputMode: "numeric",
+                    inputProps: { min: 0, max: 100 },
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                  sx={{ backgroundColor: "#fff" }}
+                  value={
+                    isNaN(bps[splitIndex] as number)
+                      ? ""
+                      : convertToPercentage(bps[splitIndex] as number).toFixed(
+                          0
+                        )
+                  }
+                  // onChange={
+                  // (e) =>
+                  // handleSharesChange(parseInt(e.target.value), splitIndex)
+                  // }
+                  // error={!isValidSplit}
+                />
+                {/* {bps[splitIndex].toString()} */}
+              </Grid>
+              <Grid container item xs={1}>
+                <Button
+                  // onClick={() => removeSplit(splitIndex)}
+                  disabled={isLastDefaultSplit}
+                >
+                  <DeleteForever
+                    color={isLastDefaultSplit ? "disabled" : "action"}
+                  />
+                </Button>
+              </Grid>
+            </Grid>
+          ))}
+          {/* <Typography variant="h6" color={theme.palette.primary.light}>
             {name}
           </Typography>
           <Typography variant="body1" color={theme.palette.grey[600]}>
@@ -214,7 +310,7 @@ function RevenueSplitInput({
             >
               Duplicate addresses not allowed
             </Typography>
-          )}
+          )} */}
         </Stack>
       </Box>
     </>

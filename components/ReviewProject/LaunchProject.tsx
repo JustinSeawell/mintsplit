@@ -8,10 +8,7 @@ import { useState } from "react";
 import { defaultProject, useProject } from "../../contexts/Project";
 import { useRevenueSplits } from "../../contexts/RevenueSplit";
 import { useSongs } from "../../contexts/Songs";
-import {
-  PaymentSplitConfigStruct,
-  ProjectParamsStruct,
-} from "../../contracts/types/MintSplitFactoryV1";
+import { ProjectParamsStruct } from "../../contracts/types/MintSplitFactory";
 import useETHBalance from "../../hooks/useETHBalance";
 import useMintSplitFactory from "../../hooks/useMintSplitFactory";
 import { getProjectCreated } from "./getProjectCreated";
@@ -33,13 +30,11 @@ function LaunchProject({
   const isRinkeby = chainId === 4;
   const [loading, setLoading] = useState(false);
   const mintSplitFactory = useMintSplitFactory();
-  const { mintSplits, royaltySplits, setMintSplits, setRoyaltySplits } =
-    useRevenueSplits();
+  const { setMintSplits, setRoyaltySplits } = useRevenueSplits();
   const { songs, setSongs } = useSongs();
   const [error, setError] = useState(false);
   const { project, setProject } = useProject();
   const [params, setParams] = useState<ProjectParamsStruct>(null);
-  const [splits, setSplits] = useState<PaymentSplitConfigStruct[]>([]);
 
   const {
     name: projectName,
@@ -59,12 +54,9 @@ function LaunchProject({
     setRoyaltySplits([]);
   };
 
-  const submitProject = async (
-    _params: ProjectParamsStruct,
-    _splitConfigs: PaymentSplitConfigStruct[]
-  ) => {
+  const submitProject = async (_params: ProjectParamsStruct) => {
     setLoadingMessage("Sending to the blockchain...");
-    const trx = await mintSplitFactory.createProject(_params, _splitConfigs, {
+    const trx = await mintSplitFactory.createProject(_params, {
       from: account,
       value: deploymentFee,
     });
@@ -74,19 +66,20 @@ function LaunchProject({
     const [contractAddr] = args;
 
     clearAppState(); // TODO: Debug this
-    router.push(`/projects?postLaunch=${contractAddr}`);
+    router.push(`/project?cid=${contractAddr}&welcome=1`);
   };
 
   const handleSubmit = async () => {
     setLoading(true);
 
     try {
-      if (params && splits.length > 0) {
+      if (params) {
+        // TODO: Fix error here
         /**
          * If metadata is already uploaded then just submit
          * the project instead of re-uploading everything.
          */
-        await submitProject(params, splits);
+        await submitProject(params);
         return;
       }
 
@@ -97,44 +90,16 @@ function LaunchProject({
         projectName,
         symbol: symbol.toUpperCase(),
         contentCount: songs.length,
-        supplyLimits: songs.map((s) => s.editions),
+        editions: songs.map((s) => s.editions),
         mintPrice: parseEther(mintCost.toString()),
-        mintLimit: mintLimit || 0,
-        releaseTime: Math.round(releaseDate.getTime() / 1000),
+        releaseTime: Math.round(releaseDate.getTime() / 1000), // TODO: Test this
         baseURI: `ipfs://${dir}/`,
         package: 0, // Default package
       } as ProjectParamsStruct;
 
       setParams(_params);
 
-      const mintSplitConfigs = mintSplits.map(
-        ({ splits }, index) =>
-          ({
-            contentId: index + 1,
-            isMint: true,
-            split: {
-              recipients: splits.map((s) => s.recipient),
-              bps: splits.map((s) => s.bps),
-            },
-          } as PaymentSplitConfigStruct)
-      );
-
-      const royaltySplitConfigs = royaltySplits.map(
-        ({ splits }, index) =>
-          ({
-            contentId: index + 1,
-            isMint: false,
-            split: {
-              recipients: splits.map((s) => s.recipient),
-              bps: splits.map((s) => s.bps),
-            },
-          } as PaymentSplitConfigStruct)
-      );
-
-      const _splitConfigs = [...mintSplitConfigs, ...royaltySplitConfigs];
-      setSplits(_splitConfigs);
-
-      await submitProject(_params, _splitConfigs);
+      await submitProject(_params);
     } catch (err) {
       // TODO: Report to sentry
       console.error(err);
