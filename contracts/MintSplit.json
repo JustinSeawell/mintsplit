@@ -1,29 +1,29 @@
 {
-  "contractName": "MintSplitSharedLib",
+  "contractName": "MintSplit",
   "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/solidity/contracts/MintSplitSharedLib.sol\":\"MintSplitSharedLib\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/solidity/contracts/MintSplitSharedLib.sol\":{\"keccak256\":\"0xd17002d0df006687313221985ca50be4c82cc4bc6fcb67ff4bb3ff09354f5e25\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd5460c563e60e37cb5e55986a3fcd6de9547abb69632de7dadd16017c81f93c\",\"dweb:/ipfs/QmWTRCqSruYYCFVPi2bNq6BsMTvS6gkpG97b9gPPWpKTJo\"]}},\"version\":1}",
-  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220264513acb4d183766673f576576892f042296141c4ab7af22822ac06c83995be64736f6c634300080d0033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220264513acb4d183766673f576576892f042296141c4ab7af22822ac06c83995be64736f6c634300080d0033",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/solidity/contracts/MintSplit.sol\":\"MintSplit\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/solidity/contracts/MintSplit.sol\":{\"keccak256\":\"0x15f358d0582a2f2b4fe045445ae7c0b03457a6d8ecc68d17f72f6edd64c59b4c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cd80fe442f987279fb966de6440f72ce8d50c76595bd336e86fc048f86cee7b6\",\"dweb:/ipfs/QmeSn1xNf6oL86qBHitbXctzUYY23gJnEcBsktubHdxQfx\"]}},\"version\":1}",
+  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220fc2045f69971ad3f9901648bfe54fd352d026551836bc3e02e8fef3fe167b05a64736f6c634300080d0033",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220fc2045f69971ad3f9901648bfe54fd352d026551836bc3e02e8fef3fe167b05a64736f6c634300080d0033",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "57:535:26:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "57:535:26:-:0;;;;;;;;",
-  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nlibrary MintSplitSharedLib {\n    struct ProjectParams {\n        string projectName;\n        string symbol;\n        uint contentCount;\n        uint[] editions;\n        uint mintPrice;\n        uint releaseTime;\n        string baseURI;\n        uint package;\n    }\n    \n    struct PaymentSplit {\n        address payable[] recipients;\n        uint[] bps;\n    }\n\n    struct PaymentSplitConfig {\n        uint contentId;\n        bool isMint;\n        PaymentSplit split;\n    }\n\n    struct Package {\n        uint fee;\n        uint limit;\n    }\n}",
-  "sourcePath": "/Users/justinfsl/Dev/misc/mintsplit/solidity/contracts/MintSplitSharedLib.sol",
+  "sourceMap": "57:466:22:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "57:466:22:-:0;;;;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nlibrary MintSplit {\n    struct Params {\n        string name;\n        string symbol;\n        string baseURI;\n        uint mintPrice;\n        uint releaseTime;\n    }\n    \n    struct PaymentSplit {\n        address payable[] recipients;\n        uint[] bps;\n    }\n\n    struct PaymentSplitConfig {\n        uint contentId;\n        bool isMint;\n        PaymentSplit split;\n    }\n\n    struct Content {\n        uint256 id;\n        uint256 editions;\n        string uri;\n    }\n}",
+  "sourcePath": "/Users/justinfsl/Dev/misc/mintsplit/solidity/contracts/MintSplit.sol",
   "ast": {
-    "absolutePath": "project:/solidity/contracts/MintSplitSharedLib.sol",
+    "absolutePath": "project:/solidity/contracts/MintSplit.sol",
     "exportedSymbols": {
-      "MintSplitSharedLib": [
-        3770
+      "MintSplit": [
+        2636
       ]
     },
-    "id": 3771,
+    "id": 2637,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3731,
+        "id": 2602,
         "literals": [
           "solidity",
           "^",
@@ -31,36 +31,36 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "32:23:26"
+        "src": "32:23:22"
       },
       {
         "abstract": false,
         "baseContracts": [],
-        "canonicalName": "MintSplitSharedLib",
+        "canonicalName": "MintSplit",
         "contractDependencies": [],
         "contractKind": "library",
         "fullyImplemented": true,
-        "id": 3770,
+        "id": 2636,
         "linearizedBaseContracts": [
-          3770
+          2636
         ],
-        "name": "MintSplitSharedLib",
-        "nameLocation": "65:18:26",
+        "name": "MintSplit",
+        "nameLocation": "65:9:22",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "canonicalName": "MintSplitSharedLib.ProjectParams",
-            "id": 3749,
+            "canonicalName": "MintSplit.Params",
+            "id": 2613,
             "members": [
               {
                 "constant": false,
-                "id": 3733,
+                "id": 2604,
                 "mutability": "mutable",
-                "name": "projectName",
-                "nameLocation": "128:11:26",
+                "name": "name",
+                "nameLocation": "112:4:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "121:18:26",
+                "scope": 2613,
+                "src": "105:11:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -68,10 +68,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 3732,
+                  "id": 2603,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "121:6:26",
+                  "src": "105:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -81,13 +81,13 @@
               },
               {
                 "constant": false,
-                "id": 3735,
+                "id": 2606,
                 "mutability": "mutable",
                 "name": "symbol",
-                "nameLocation": "156:6:26",
+                "nameLocation": "133:6:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "149:13:26",
+                "scope": 2613,
+                "src": "126:13:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -95,10 +95,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 3734,
+                  "id": 2605,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "149:6:26",
+                  "src": "126:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -108,130 +108,13 @@
               },
               {
                 "constant": false,
-                "id": 3737,
-                "mutability": "mutable",
-                "name": "contentCount",
-                "nameLocation": "177:12:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "172:17:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_uint256",
-                  "typeString": "uint256"
-                },
-                "typeName": {
-                  "id": 3736,
-                  "name": "uint",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "172:4:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3740,
-                "mutability": "mutable",
-                "name": "editions",
-                "nameLocation": "206:8:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "199:15:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                  "typeString": "uint256[]"
-                },
-                "typeName": {
-                  "baseType": {
-                    "id": 3738,
-                    "name": "uint",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "199:4:26",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "id": 3739,
-                  "nodeType": "ArrayTypeName",
-                  "src": "199:6:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                    "typeString": "uint256[]"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3742,
-                "mutability": "mutable",
-                "name": "mintPrice",
-                "nameLocation": "229:9:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "224:14:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_uint256",
-                  "typeString": "uint256"
-                },
-                "typeName": {
-                  "id": 3741,
-                  "name": "uint",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "224:4:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3744,
-                "mutability": "mutable",
-                "name": "releaseTime",
-                "nameLocation": "253:11:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "248:16:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_uint256",
-                  "typeString": "uint256"
-                },
-                "typeName": {
-                  "id": 3743,
-                  "name": "uint",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "248:4:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3746,
+                "id": 2608,
                 "mutability": "mutable",
                 "name": "baseURI",
-                "nameLocation": "281:7:26",
+                "nameLocation": "156:7:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "274:14:26",
+                "scope": 2613,
+                "src": "149:14:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -239,10 +122,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 3745,
+                  "id": 2607,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "274:6:26",
+                  "src": "149:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -252,13 +135,13 @@
               },
               {
                 "constant": false,
-                "id": 3748,
+                "id": 2610,
                 "mutability": "mutable",
-                "name": "package",
-                "nameLocation": "303:7:26",
+                "name": "mintPrice",
+                "nameLocation": "178:9:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "298:12:26",
+                "scope": 2613,
+                "src": "173:14:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -266,10 +149,37 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3747,
+                  "id": 2609,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
-                  "src": "298:4:26",
+                  "src": "173:4:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2612,
+                "mutability": "mutable",
+                "name": "releaseTime",
+                "nameLocation": "202:11:22",
+                "nodeType": "VariableDeclaration",
+                "scope": 2613,
+                "src": "197:16:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2611,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "197:4:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -278,26 +188,26 @@
                 "visibility": "internal"
               }
             ],
-            "name": "ProjectParams",
-            "nameLocation": "97:13:26",
+            "name": "Params",
+            "nameLocation": "88:6:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "90:227:26",
+            "scope": 2636,
+            "src": "81:139:22",
             "visibility": "public"
           },
           {
-            "canonicalName": "MintSplitSharedLib.PaymentSplit",
-            "id": 3756,
+            "canonicalName": "MintSplit.PaymentSplit",
+            "id": 2620,
             "members": [
               {
                 "constant": false,
-                "id": 3752,
+                "id": 2616,
                 "mutability": "mutable",
                 "name": "recipients",
-                "nameLocation": "375:10:26",
+                "nameLocation": "278:10:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3756,
-                "src": "357:28:26",
+                "scope": 2620,
+                "src": "260:28:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -306,19 +216,19 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 3750,
+                    "id": 2614,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "357:15:26",
+                    "src": "260:15:22",
                     "stateMutability": "payable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address_payable",
                       "typeString": "address payable"
                     }
                   },
-                  "id": 3751,
+                  "id": 2615,
                   "nodeType": "ArrayTypeName",
-                  "src": "357:17:26",
+                  "src": "260:17:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_payable_$dyn_storage_ptr",
                     "typeString": "address payable[]"
@@ -328,13 +238,13 @@
               },
               {
                 "constant": false,
-                "id": 3755,
+                "id": 2619,
                 "mutability": "mutable",
                 "name": "bps",
-                "nameLocation": "402:3:26",
+                "nameLocation": "305:3:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3756,
-                "src": "395:10:26",
+                "scope": 2620,
+                "src": "298:10:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -343,18 +253,18 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 3753,
+                    "id": 2617,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "395:4:26",
+                    "src": "298:4:22",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3754,
+                  "id": 2618,
                   "nodeType": "ArrayTypeName",
-                  "src": "395:6:26",
+                  "src": "298:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                     "typeString": "uint256[]"
@@ -364,25 +274,25 @@
               }
             ],
             "name": "PaymentSplit",
-            "nameLocation": "334:12:26",
+            "nameLocation": "237:12:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "327:85:26",
+            "scope": 2636,
+            "src": "230:85:22",
             "visibility": "public"
           },
           {
-            "canonicalName": "MintSplitSharedLib.PaymentSplitConfig",
-            "id": 3764,
+            "canonicalName": "MintSplit.PaymentSplitConfig",
+            "id": 2628,
             "members": [
               {
                 "constant": false,
-                "id": 3758,
+                "id": 2622,
                 "mutability": "mutable",
                 "name": "contentId",
-                "nameLocation": "459:9:26",
+                "nameLocation": "362:9:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3764,
-                "src": "454:14:26",
+                "scope": 2628,
+                "src": "357:14:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -390,10 +300,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3757,
+                  "id": 2621,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
-                  "src": "454:4:26",
+                  "src": "357:4:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -403,13 +313,13 @@
               },
               {
                 "constant": false,
-                "id": 3760,
+                "id": 2624,
                 "mutability": "mutable",
                 "name": "isMint",
-                "nameLocation": "483:6:26",
+                "nameLocation": "386:6:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3764,
-                "src": "478:11:26",
+                "scope": 2628,
+                "src": "381:11:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -417,10 +327,10 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 3759,
+                  "id": 2623,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
-                  "src": "478:4:26",
+                  "src": "381:4:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bool",
                     "typeString": "bool"
@@ -430,59 +340,59 @@
               },
               {
                 "constant": false,
-                "id": 3763,
+                "id": 2627,
                 "mutability": "mutable",
                 "name": "split",
-                "nameLocation": "512:5:26",
+                "nameLocation": "415:5:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3764,
-                "src": "499:18:26",
+                "scope": 2628,
+                "src": "402:18:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_PaymentSplit_$3756_storage_ptr",
-                  "typeString": "struct MintSplitSharedLib.PaymentSplit"
+                  "typeIdentifier": "t_struct$_PaymentSplit_$2620_storage_ptr",
+                  "typeString": "struct MintSplit.PaymentSplit"
                 },
                 "typeName": {
-                  "id": 3762,
+                  "id": 2626,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 3761,
+                    "id": 2625,
                     "name": "PaymentSplit",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 3756,
-                    "src": "499:12:26"
+                    "referencedDeclaration": 2620,
+                    "src": "402:12:22"
                   },
-                  "referencedDeclaration": 3756,
-                  "src": "499:12:26",
+                  "referencedDeclaration": 2620,
+                  "src": "402:12:22",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_PaymentSplit_$3756_storage_ptr",
-                    "typeString": "struct MintSplitSharedLib.PaymentSplit"
+                    "typeIdentifier": "t_struct$_PaymentSplit_$2620_storage_ptr",
+                    "typeString": "struct MintSplit.PaymentSplit"
                   }
                 },
                 "visibility": "internal"
               }
             ],
             "name": "PaymentSplitConfig",
-            "nameLocation": "425:18:26",
+            "nameLocation": "328:18:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "418:106:26",
+            "scope": 2636,
+            "src": "321:106:22",
             "visibility": "public"
           },
           {
-            "canonicalName": "MintSplitSharedLib.Package",
-            "id": 3769,
+            "canonicalName": "MintSplit.Content",
+            "id": 2635,
             "members": [
               {
                 "constant": false,
-                "id": 3766,
+                "id": 2630,
                 "mutability": "mutable",
-                "name": "fee",
-                "nameLocation": "560:3:26",
+                "name": "id",
+                "nameLocation": "466:2:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3769,
-                "src": "555:8:26",
+                "scope": 2635,
+                "src": "458:10:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -490,10 +400,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3765,
-                  "name": "uint",
+                  "id": 2629,
+                  "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "555:4:26",
+                  "src": "458:7:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -503,13 +413,13 @@
               },
               {
                 "constant": false,
-                "id": 3768,
+                "id": 2632,
                 "mutability": "mutable",
-                "name": "limit",
-                "nameLocation": "578:5:26",
+                "name": "editions",
+                "nameLocation": "486:8:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3769,
-                "src": "573:10:26",
+                "scope": 2635,
+                "src": "478:16:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -517,46 +427,73 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3767,
-                  "name": "uint",
+                  "id": 2631,
+                  "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "573:4:26",
+                  "src": "478:7:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
                   }
                 },
                 "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2634,
+                "mutability": "mutable",
+                "name": "uri",
+                "nameLocation": "511:3:22",
+                "nodeType": "VariableDeclaration",
+                "scope": 2635,
+                "src": "504:10:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 2633,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "504:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
               }
             ],
-            "name": "Package",
-            "nameLocation": "537:7:26",
+            "name": "Content",
+            "nameLocation": "440:7:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "530:60:26",
+            "scope": 2636,
+            "src": "433:88:22",
             "visibility": "public"
           }
         ],
-        "scope": 3771,
-        "src": "57:535:26",
+        "scope": 2637,
+        "src": "57:466:22",
         "usedErrors": []
       }
     ],
-    "src": "32:560:26"
+    "src": "32:491:22"
   },
   "legacyAST": {
-    "absolutePath": "project:/solidity/contracts/MintSplitSharedLib.sol",
+    "absolutePath": "project:/solidity/contracts/MintSplit.sol",
     "exportedSymbols": {
-      "MintSplitSharedLib": [
-        3770
+      "MintSplit": [
+        2636
       ]
     },
-    "id": 3771,
+    "id": 2637,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3731,
+        "id": 2602,
         "literals": [
           "solidity",
           "^",
@@ -564,36 +501,36 @@
           ".0"
         ],
         "nodeType": "PragmaDirective",
-        "src": "32:23:26"
+        "src": "32:23:22"
       },
       {
         "abstract": false,
         "baseContracts": [],
-        "canonicalName": "MintSplitSharedLib",
+        "canonicalName": "MintSplit",
         "contractDependencies": [],
         "contractKind": "library",
         "fullyImplemented": true,
-        "id": 3770,
+        "id": 2636,
         "linearizedBaseContracts": [
-          3770
+          2636
         ],
-        "name": "MintSplitSharedLib",
-        "nameLocation": "65:18:26",
+        "name": "MintSplit",
+        "nameLocation": "65:9:22",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
-            "canonicalName": "MintSplitSharedLib.ProjectParams",
-            "id": 3749,
+            "canonicalName": "MintSplit.Params",
+            "id": 2613,
             "members": [
               {
                 "constant": false,
-                "id": 3733,
+                "id": 2604,
                 "mutability": "mutable",
-                "name": "projectName",
-                "nameLocation": "128:11:26",
+                "name": "name",
+                "nameLocation": "112:4:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "121:18:26",
+                "scope": 2613,
+                "src": "105:11:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -601,10 +538,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 3732,
+                  "id": 2603,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "121:6:26",
+                  "src": "105:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -614,13 +551,13 @@
               },
               {
                 "constant": false,
-                "id": 3735,
+                "id": 2606,
                 "mutability": "mutable",
                 "name": "symbol",
-                "nameLocation": "156:6:26",
+                "nameLocation": "133:6:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "149:13:26",
+                "scope": 2613,
+                "src": "126:13:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -628,10 +565,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 3734,
+                  "id": 2605,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "149:6:26",
+                  "src": "126:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -641,130 +578,13 @@
               },
               {
                 "constant": false,
-                "id": 3737,
-                "mutability": "mutable",
-                "name": "contentCount",
-                "nameLocation": "177:12:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "172:17:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_uint256",
-                  "typeString": "uint256"
-                },
-                "typeName": {
-                  "id": 3736,
-                  "name": "uint",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "172:4:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3740,
-                "mutability": "mutable",
-                "name": "editions",
-                "nameLocation": "206:8:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "199:15:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                  "typeString": "uint256[]"
-                },
-                "typeName": {
-                  "baseType": {
-                    "id": 3738,
-                    "name": "uint",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "199:4:26",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_uint256",
-                      "typeString": "uint256"
-                    }
-                  },
-                  "id": 3739,
-                  "nodeType": "ArrayTypeName",
-                  "src": "199:6:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
-                    "typeString": "uint256[]"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3742,
-                "mutability": "mutable",
-                "name": "mintPrice",
-                "nameLocation": "229:9:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "224:14:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_uint256",
-                  "typeString": "uint256"
-                },
-                "typeName": {
-                  "id": 3741,
-                  "name": "uint",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "224:4:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3744,
-                "mutability": "mutable",
-                "name": "releaseTime",
-                "nameLocation": "253:11:26",
-                "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "248:16:26",
-                "stateVariable": false,
-                "storageLocation": "default",
-                "typeDescriptions": {
-                  "typeIdentifier": "t_uint256",
-                  "typeString": "uint256"
-                },
-                "typeName": {
-                  "id": 3743,
-                  "name": "uint",
-                  "nodeType": "ElementaryTypeName",
-                  "src": "248:4:26",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_uint256",
-                    "typeString": "uint256"
-                  }
-                },
-                "visibility": "internal"
-              },
-              {
-                "constant": false,
-                "id": 3746,
+                "id": 2608,
                 "mutability": "mutable",
                 "name": "baseURI",
-                "nameLocation": "281:7:26",
+                "nameLocation": "156:7:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "274:14:26",
+                "scope": 2613,
+                "src": "149:14:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -772,10 +592,10 @@
                   "typeString": "string"
                 },
                 "typeName": {
-                  "id": 3745,
+                  "id": 2607,
                   "name": "string",
                   "nodeType": "ElementaryTypeName",
-                  "src": "274:6:26",
+                  "src": "149:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_string_storage_ptr",
                     "typeString": "string"
@@ -785,13 +605,13 @@
               },
               {
                 "constant": false,
-                "id": 3748,
+                "id": 2610,
                 "mutability": "mutable",
-                "name": "package",
-                "nameLocation": "303:7:26",
+                "name": "mintPrice",
+                "nameLocation": "178:9:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3749,
-                "src": "298:12:26",
+                "scope": 2613,
+                "src": "173:14:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -799,10 +619,37 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3747,
+                  "id": 2609,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
-                  "src": "298:4:26",
+                  "src": "173:4:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2612,
+                "mutability": "mutable",
+                "name": "releaseTime",
+                "nameLocation": "202:11:22",
+                "nodeType": "VariableDeclaration",
+                "scope": 2613,
+                "src": "197:16:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 2611,
+                  "name": "uint",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "197:4:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -811,26 +658,26 @@
                 "visibility": "internal"
               }
             ],
-            "name": "ProjectParams",
-            "nameLocation": "97:13:26",
+            "name": "Params",
+            "nameLocation": "88:6:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "90:227:26",
+            "scope": 2636,
+            "src": "81:139:22",
             "visibility": "public"
           },
           {
-            "canonicalName": "MintSplitSharedLib.PaymentSplit",
-            "id": 3756,
+            "canonicalName": "MintSplit.PaymentSplit",
+            "id": 2620,
             "members": [
               {
                 "constant": false,
-                "id": 3752,
+                "id": 2616,
                 "mutability": "mutable",
                 "name": "recipients",
-                "nameLocation": "375:10:26",
+                "nameLocation": "278:10:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3756,
-                "src": "357:28:26",
+                "scope": 2620,
+                "src": "260:28:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -839,19 +686,19 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 3750,
+                    "id": 2614,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "357:15:26",
+                    "src": "260:15:22",
                     "stateMutability": "payable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address_payable",
                       "typeString": "address payable"
                     }
                   },
-                  "id": 3751,
+                  "id": 2615,
                   "nodeType": "ArrayTypeName",
-                  "src": "357:17:26",
+                  "src": "260:17:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_address_payable_$dyn_storage_ptr",
                     "typeString": "address payable[]"
@@ -861,13 +708,13 @@
               },
               {
                 "constant": false,
-                "id": 3755,
+                "id": 2619,
                 "mutability": "mutable",
                 "name": "bps",
-                "nameLocation": "402:3:26",
+                "nameLocation": "305:3:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3756,
-                "src": "395:10:26",
+                "scope": 2620,
+                "src": "298:10:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -876,18 +723,18 @@
                 },
                 "typeName": {
                   "baseType": {
-                    "id": 3753,
+                    "id": 2617,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "395:4:26",
+                    "src": "298:4:22",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 3754,
+                  "id": 2618,
                   "nodeType": "ArrayTypeName",
-                  "src": "395:6:26",
+                  "src": "298:6:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                     "typeString": "uint256[]"
@@ -897,25 +744,25 @@
               }
             ],
             "name": "PaymentSplit",
-            "nameLocation": "334:12:26",
+            "nameLocation": "237:12:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "327:85:26",
+            "scope": 2636,
+            "src": "230:85:22",
             "visibility": "public"
           },
           {
-            "canonicalName": "MintSplitSharedLib.PaymentSplitConfig",
-            "id": 3764,
+            "canonicalName": "MintSplit.PaymentSplitConfig",
+            "id": 2628,
             "members": [
               {
                 "constant": false,
-                "id": 3758,
+                "id": 2622,
                 "mutability": "mutable",
                 "name": "contentId",
-                "nameLocation": "459:9:26",
+                "nameLocation": "362:9:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3764,
-                "src": "454:14:26",
+                "scope": 2628,
+                "src": "357:14:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -923,10 +770,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3757,
+                  "id": 2621,
                   "name": "uint",
                   "nodeType": "ElementaryTypeName",
-                  "src": "454:4:26",
+                  "src": "357:4:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -936,13 +783,13 @@
               },
               {
                 "constant": false,
-                "id": 3760,
+                "id": 2624,
                 "mutability": "mutable",
                 "name": "isMint",
-                "nameLocation": "483:6:26",
+                "nameLocation": "386:6:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3764,
-                "src": "478:11:26",
+                "scope": 2628,
+                "src": "381:11:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -950,10 +797,10 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 3759,
+                  "id": 2623,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
-                  "src": "478:4:26",
+                  "src": "381:4:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_bool",
                     "typeString": "bool"
@@ -963,59 +810,59 @@
               },
               {
                 "constant": false,
-                "id": 3763,
+                "id": 2627,
                 "mutability": "mutable",
                 "name": "split",
-                "nameLocation": "512:5:26",
+                "nameLocation": "415:5:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3764,
-                "src": "499:18:26",
+                "scope": 2628,
+                "src": "402:18:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_PaymentSplit_$3756_storage_ptr",
-                  "typeString": "struct MintSplitSharedLib.PaymentSplit"
+                  "typeIdentifier": "t_struct$_PaymentSplit_$2620_storage_ptr",
+                  "typeString": "struct MintSplit.PaymentSplit"
                 },
                 "typeName": {
-                  "id": 3762,
+                  "id": 2626,
                   "nodeType": "UserDefinedTypeName",
                   "pathNode": {
-                    "id": 3761,
+                    "id": 2625,
                     "name": "PaymentSplit",
                     "nodeType": "IdentifierPath",
-                    "referencedDeclaration": 3756,
-                    "src": "499:12:26"
+                    "referencedDeclaration": 2620,
+                    "src": "402:12:22"
                   },
-                  "referencedDeclaration": 3756,
-                  "src": "499:12:26",
+                  "referencedDeclaration": 2620,
+                  "src": "402:12:22",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_PaymentSplit_$3756_storage_ptr",
-                    "typeString": "struct MintSplitSharedLib.PaymentSplit"
+                    "typeIdentifier": "t_struct$_PaymentSplit_$2620_storage_ptr",
+                    "typeString": "struct MintSplit.PaymentSplit"
                   }
                 },
                 "visibility": "internal"
               }
             ],
             "name": "PaymentSplitConfig",
-            "nameLocation": "425:18:26",
+            "nameLocation": "328:18:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "418:106:26",
+            "scope": 2636,
+            "src": "321:106:22",
             "visibility": "public"
           },
           {
-            "canonicalName": "MintSplitSharedLib.Package",
-            "id": 3769,
+            "canonicalName": "MintSplit.Content",
+            "id": 2635,
             "members": [
               {
                 "constant": false,
-                "id": 3766,
+                "id": 2630,
                 "mutability": "mutable",
-                "name": "fee",
-                "nameLocation": "560:3:26",
+                "name": "id",
+                "nameLocation": "466:2:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3769,
-                "src": "555:8:26",
+                "scope": 2635,
+                "src": "458:10:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1023,10 +870,10 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3765,
-                  "name": "uint",
+                  "id": 2629,
+                  "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "555:4:26",
+                  "src": "458:7:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
@@ -1036,13 +883,13 @@
               },
               {
                 "constant": false,
-                "id": 3768,
+                "id": 2632,
                 "mutability": "mutable",
-                "name": "limit",
-                "nameLocation": "578:5:26",
+                "name": "editions",
+                "nameLocation": "486:8:22",
                 "nodeType": "VariableDeclaration",
-                "scope": 3769,
-                "src": "573:10:26",
+                "scope": 2635,
+                "src": "478:16:22",
                 "stateVariable": false,
                 "storageLocation": "default",
                 "typeDescriptions": {
@@ -1050,32 +897,59 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3767,
-                  "name": "uint",
+                  "id": 2631,
+                  "name": "uint256",
                   "nodeType": "ElementaryTypeName",
-                  "src": "573:4:26",
+                  "src": "478:7:22",
                   "typeDescriptions": {
                     "typeIdentifier": "t_uint256",
                     "typeString": "uint256"
                   }
                 },
                 "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 2634,
+                "mutability": "mutable",
+                "name": "uri",
+                "nameLocation": "511:3:22",
+                "nodeType": "VariableDeclaration",
+                "scope": 2635,
+                "src": "504:10:22",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 2633,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "504:6:22",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "visibility": "internal"
               }
             ],
-            "name": "Package",
-            "nameLocation": "537:7:26",
+            "name": "Content",
+            "nameLocation": "440:7:22",
             "nodeType": "StructDefinition",
-            "scope": 3770,
-            "src": "530:60:26",
+            "scope": 2636,
+            "src": "433:88:22",
             "visibility": "public"
           }
         ],
-        "scope": 3771,
-        "src": "57:535:26",
+        "scope": 2637,
+        "src": "57:466:22",
         "usedErrors": []
       }
     ],
-    "src": "32:560:26"
+    "src": "32:491:22"
   },
   "compiler": {
     "name": "solc",
@@ -1085,12 +959,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x58de07F56757E8348E0BC124A7A622AAAdC90FfC",
-      "transactionHash": "0xd5cd37cbc5bc64db59423a9fb36eace8f63024e01318840ea14f75c978571c52"
+      "address": "0x5A3B5A1174ca4Bc2a8b8bf55B90526B56Ca9F1Fe",
+      "transactionHash": "0x14655eb903fdcf937ef639ebcbdcf6aabb800453fcc1d2d99ff0ac9110a6bf55"
     }
   },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2022-03-29T16:58:02.015Z",
+  "updatedAt": "2022-04-14T19:29:50.255Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

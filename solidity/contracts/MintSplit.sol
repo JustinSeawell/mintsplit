@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-library MintSplitSharedLib {
-    struct ProjectParams {
-        string projectName;
+library MintSplit {
+    struct Params {
+        string name;
         string symbol;
-        uint contentCount;
-        uint[] editions;
+        string baseURI;
         uint mintPrice;
         uint releaseTime;
-        string baseURI;
-        uint package;
     }
     
     struct PaymentSplit {
@@ -24,8 +21,9 @@ library MintSplitSharedLib {
         PaymentSplit split;
     }
 
-    struct Package {
-        uint fee;
-        uint limit;
+    struct Content {
+        uint256 id;
+        uint256 editions;
+        string uri;
     }
 }
