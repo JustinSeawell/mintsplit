@@ -8,7 +8,6 @@ import ProjectOverview from "../components/ProjectOverview";
 import TabLayout from "../components/TabLayout";
 import useCollectionData from "../hooks/useCollectionData";
 import useETHBalance from "../hooks/useETHBalance";
-import useDefaultSplits from "../hooks/useDefaultSplits";
 import useNFTContract from "../hooks/useNFTContract";
 import ProjectSettings from "../components/ProjectSettings";
 import useBalance from "../hooks/useBalance";
@@ -26,7 +25,6 @@ function Project() {
   const [tab, setTab] = useState(0);
   const contract = useNFTContract(contractAddress);
   const { data: collectionData } = useCollectionData(contractAddress);
-  const { data: defaultSplits } = useDefaultSplits(contractAddress);
   const { data: balance } = useETHBalance(contractAddress);
   const { data: userBalance } = useBalance(contractAddress, account);
 
@@ -92,7 +90,6 @@ function Project() {
                   balance={balance}
                   totalBalance={collectionData?.totalBalance}
                   userBalance={userBalance}
-                  defaultMintSplits={defaultSplits?.[0]?.recipients.length ?? 0}
                   setTab={setTab}
                 />
               )}

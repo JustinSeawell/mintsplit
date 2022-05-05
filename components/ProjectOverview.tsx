@@ -31,7 +31,6 @@ interface ProjectOverviewProps {
   tokens: BigNumber;
   balance: BigNumber;
   userBalance: BigNumber;
-  defaultMintSplits: number;
   setTab: (tab: number) => void;
 }
 
@@ -47,7 +46,6 @@ function ProjectOverview({
   tokens,
   balance,
   userBalance,
-  defaultMintSplits,
   setTab,
 }: ProjectOverviewProps) {
   const router = useRouter();
@@ -187,7 +185,6 @@ function ProjectOverview({
                 Splits
               </Typography>
               <Typography variant="body2" gutterBottom>
-                You have {defaultMintSplits} default mint splits configured.
                 Share some revenue with your collaborators!
               </Typography>
             </CardContent>
