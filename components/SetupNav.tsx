@@ -5,6 +5,7 @@ interface SetupNavProps {
   handleBack: () => void;
   nextText?: string;
   backText?: string;
+  nextDisabled?: boolean;
 }
 
 function SetupNav({
@@ -12,6 +13,7 @@ function SetupNav({
   handleBack,
   backText,
   nextText,
+  nextDisabled,
 }: SetupNavProps) {
   return (
     <Grid container item justifyContent={"space-between"}>
@@ -23,6 +25,7 @@ function SetupNav({
         size="large"
         color="secondary"
         onClick={handleNext}
+        disabled={nextDisabled}
       >
         {nextText ?? "Next"}
       </Button>

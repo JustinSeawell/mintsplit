@@ -1,7 +1,6 @@
 import { LoadingButton } from "@mui/lab";
 import { Alert, AlertTitle, Container, Grid, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
-import mixpanel from "mixpanel-browser";
 import { useRouter } from "next/dist/client/router";
 import Head from "next/head";
 import Layout from "../components/Layout";
@@ -9,21 +8,14 @@ import ProjectCard from "../components/ProjectCard";
 import useProjectsByUser from "../hooks/useProjectsByUser";
 
 function Projects() {
-  // mixpanel.track("Page view", { page: "Profile" });
   const router = useRouter();
-  const { query } = router;
-  const postLaunchAddr = query?.postLaunch;
   const { account, library } = useWeb3React();
   const isConnected = typeof account === "string" && !!library;
   const { data: projects } = useProjectsByUser(account);
 
   return (
-    <div>
-      <Head>
-        <title>MintSplit | My Projects</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Layout>
+    <>
+      <Layout title="My Projects">
         <section>
           <Container maxWidth="lg">
             {!isConnected && (
@@ -39,31 +31,21 @@ function Projects() {
                   Your Projects
                 </Typography>
                 <Typography variant="subtitle1" gutterBottom>
-                  Manage your MintSplit NFT projects.
+                  Manage your audio NFT projects.
                 </Typography>
-                {!!postLaunchAddr && (
-                  <Grid item xs={8} marginX={"auto"} mt={"2rem"}>
-                    <Alert severity="success" sx={{ textAlign: "left" }}>
-                      <AlertTitle>Congrats!</AlertTitle>
-                      Congratulations on creating your new NFT project. Use the
-                      share link below to spread the word.
-                    </Alert>
-                  </Grid>
-                )}
-                <Grid container item xs={10} mt={"2rem"} marginX={"auto"}>
+                <Grid container item xs={10} marginY={"2rem"} marginX={"auto"}>
                   <LoadingButton
                     variant="contained"
                     color="secondary"
-                    size="large"
                     component="span"
-                    sx={{ padding: "1rem 1.5rem" }}
+                    size="large"
                     onClick={() => router.push("/setup")}
                   >
                     Create Project
                   </LoadingButton>
                 </Grid>
                 <Grid container marginX={"auto"} justifyContent={"center"}>
-                  <Grid container item xs={10} spacing={3} mt={"1rem"}>
+                  <Grid container item xs={10} spacing={2}>
                     {projects &&
                       projects.map((project, index) => (
                         <Grid key={index} item xs={12} md={6} xl={4}>
@@ -83,7 +65,7 @@ function Projects() {
           </Container>
         </section>
       </Layout>
-    </div>
+    </>
   );
 }
 

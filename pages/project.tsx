@@ -1,44 +1,69 @@
-import {
-  CircularProgress,
-  Container,
-  Divider,
-  Grid,
-  Tab,
-  Tabs,
-} from "@mui/material";
+import { Alert, CircularProgress, Container, Grid } from "@mui/material";
+import { useWeb3React } from "@web3-react/core";
 import { useRouter } from "next/dist/client/router";
-import Head from "next/head";
-import { useState } from "react";
-import Layout from "../components/Layout";
+import { useEffect, useState } from "react";
+import ManageContent from "../components/ManageContent";
 import ManageRevenueSplits from "../components/ManageRevenueSplits";
 import ProjectOverview from "../components/ProjectOverview";
+import TabLayout from "../components/TabLayout";
 import useCollectionData from "../hooks/useCollectionData";
+import useETHBalance from "../hooks/useETHBalance";
+import useDefaultSplits from "../hooks/useDefaultSplits";
+import useNFTContract from "../hooks/useNFTContract";
+import ProjectSettings from "../components/ProjectSettings";
+import useBalance from "../hooks/useBalance";
 
-const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
+const TABS = ["Project", "Revenue Splits", "Content", "Settings"];
 
 function Project() {
+  const { account, library } = useWeb3React();
+  const isConnected = typeof account === "string" && !!library;
   const router = useRouter();
-  const [tab, setTab] = useState(0);
-  const [addingSplits, setAddingSplits] = useState(false);
-  const { cid } = router.query;
+  const { cid, t } = router.query;
   const contractAddress = cid as string;
+  const startTab = parseInt(t as string);
+  const validStartTab = !isNaN(startTab) && startTab < TABS.length - 1;
+  const [tab, setTab] = useState(0);
+  const contract = useNFTContract(contractAddress);
   const { data: collectionData } = useCollectionData(contractAddress);
-  const { name, revenueSplitter } = {
-    ...collectionData,
-  };
-  const hasSplitter = revenueSplitter != EMPTY_ADDRESS;
+  const { data: defaultSplits } = useDefaultSplits(contractAddress);
+  const { data: balance } = useETHBalance(contractAddress);
+  const { data: userBalance } = useBalance(contractAddress, account);
 
   const handleChange = (event: React.SyntheticEvent, newTab: number) => {
     setTab(newTab);
   };
 
+  useEffect(() => {
+    if (validStartTab) setTab(startTab);
+  }, [startTab, validStartTab]);
+
+  if (!isConnected)
+    return (
+      <>
+        <TabLayout
+          title={collectionData?.params?.name}
+          tabs={TABS}
+          selected={tab}
+          handleChange={handleChange}
+        >
+          <Grid item xs={6} m={"auto"} pt={"2rem"}>
+            <Alert severity="warning">
+              Please connect to MetaMask to continue.
+            </Alert>
+          </Grid>
+        </TabLayout>
+      </>
+    );
+
   return (
     <>
-      <Head>
-        <title>MintSplit | {name ?? "Project"}</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Layout>
+      <TabLayout
+        title={collectionData?.params?.name}
+        tabs={TABS}
+        selected={tab}
+        handleChange={handleChange}
+      >
         <section>
           {!collectionData && (
             <Container maxWidth="lg">
@@ -46,46 +71,56 @@ function Project() {
             </Container>
           )}
           {collectionData && (
-            <Container maxWidth="lg" sx={{ textAlign: "left" }}>
-              <Grid
-                container
-                marginX={"auto"}
-                justifyContent={"center"}
-                item
-                xs={12}
-              >
-                {/* <Grid container item spacing={4}> */}
-                <Grid container item xs={12}>
-                  <Tabs value={tab} onChange={handleChange}>
-                    <Tab label="Project" />
-                    <Tab label="Revenue Splits" />
-                    <Tab label="Content" />
-                    <Tab label="Settings" />
-                  </Tabs>
-                  <Divider sx={{ width: "100%" }} />
-                </Grid>
-                {/* {tab == 0 && (
-                    <ProjectOverview
-                      collectionData={collectionData}
-                      hasSplitter={hasSplitter}
-                      setTab={setTab}
-                    />
-                  )} */}
-                {/* {tab == 1 && (
-                    <ManageRevenueSplits
-                      hasSplitter={hasSplitter}
-                      revenueSplitter={revenueSplitter}
-                      addingSplits={addingSplits}
-                      setAddingSplits={setAddingSplits}
-                    />
-                  )} */}
-                {/* {tab == 2 && <div>Content</div>} */}
-                {/* </Grid> */}
-              </Grid>
-            </Container>
+            <Grid
+              container
+              marginX={"auto"}
+              item
+              p={"1rem 0"}
+              xs={12}
+              textAlign="left"
+            >
+              {tab == 0 && (
+                <ProjectOverview
+                  contract={contract}
+                  account={account}
+                  ownerAddress={collectionData?.owner}
+                  name={collectionData?.params?.name}
+                  symbol={collectionData?.params?.symbol}
+                  editions={collectionData?.editions}
+                  totalEditions={collectionData?.totalEditions}
+                  tokens={collectionData?.tokens}
+                  balance={balance}
+                  totalBalance={collectionData?.totalBalance}
+                  userBalance={userBalance}
+                  defaultMintSplits={defaultSplits?.[0]?.recipients.length ?? 0}
+                  setTab={setTab}
+                />
+              )}
+              {tab == 1 && (
+                <ManageRevenueSplits
+                  contractAddress={contractAddress}
+                  ownerAddress={collectionData?.owner}
+                  editions={collectionData?.editions}
+                />
+              )}
+              {tab == 2 && (
+                <ManageContent
+                  contractAddress={contractAddress}
+                  baseURI={collectionData?.params?.baseURI}
+                  editions={collectionData?.editions}
+                />
+              )}
+              {tab == 3 && (
+                <ProjectSettings
+                  contractAddress={contractAddress}
+                  params={collectionData?.params}
+                  isPaused={collectionData?.isPaused}
+                />
+              )}
+            </Grid>
           )}
         </section>
-      </Layout>
+      </TabLayout>
     </>
   );
 }

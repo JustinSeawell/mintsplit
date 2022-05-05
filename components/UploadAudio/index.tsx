@@ -1,32 +1,44 @@
+import mixpanel from "mixpanel-browser";
 import { LoadingButton } from "@mui/lab";
-import { styled, Typography } from "@mui/material";
-import { ChangeEvent } from "react";
+import { Alert, Grid, Typography } from "@mui/material";
+import { ChangeEvent, useState } from "react";
 import { useSongs } from "../../contexts/Songs";
 import { convertAudioToSongs } from "./convertAudioToSongs";
-
-const Input = styled("input")({
-  display: "none",
-});
-
-const Label = styled("label")({
-  display: "inline-block",
-});
+import { Input } from "../Input";
+import { Label } from "../Label";
+import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../../constants";
 
 interface UploadAudioProps {
   onSuccess: () => void;
 }
 
 function UploadAudio({ onSuccess }: UploadAudioProps) {
+  const [error, setError] = useState("");
   const { setSongs } = useSongs();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    // TODO: update to use new context
+    let isAllowed = true;
+
+    Array.from(e.target.files).forEach((file) => {
+      if (file.size > FILE_LIMIT) {
+        isAllowed = false;
+        setError(`Each file should be less than ${FILE_LIMIT_DISPLAY}`); // TODO: Update text to dynamically display file size
+      }
+    });
+
+    if (!isAllowed) return;
     setSongs(convertAudioToSongs(e.target.files));
+    mixpanel.track("uploaded content");
     onSuccess();
   };
 
   return (
     <>
+      {error && (
+        <Grid item xs={6} marginX={"auto"} mb={"2rem"}>
+          <Alert severity="error">{error}</Alert>
+        </Grid>
+      )}
       <Typography variant="h4" gutterBottom>
         Upload Content
       </Typography>

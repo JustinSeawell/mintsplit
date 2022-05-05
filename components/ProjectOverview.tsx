@@ -1,70 +1,103 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { formatEther } from "@ethersproject/units";
 import { LoadingButton } from "@mui/lab";
 import {
-  Button,
-  Grid,
-  Link,
-  Stack,
-  Typography,
-  Snackbar,
   Alert,
   AlertTitle,
+  Button,
   Card,
+  CardActions,
   CardContent,
+  Grid,
+  Link,
+  Snackbar,
+  Typography,
 } from "@mui/material";
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
-import useCollectionData from "../hooks/useCollectionData";
-import useETHBalance from "../hooks/useETHBalance";
-import useNFTContract from "../hooks/useNFTContract";
-import { Collection } from "../types/Collection";
+import { MintSplitERC721 } from "../contracts/types";
+import theme from "../theme";
 import { formatEtherscanLink } from "../util";
 
 interface ProjectOverviewProps {
-  collectionData: Collection;
-  hasSplitter: boolean;
+  contract: MintSplitERC721;
+  account: string;
+  ownerAddress: string;
+  name: string;
+  symbol: string;
+  editions: BigNumber[];
+  totalEditions: BigNumber;
+  totalBalance: BigNumber;
+  tokens: BigNumber;
+  balance: BigNumber;
+  userBalance: BigNumber;
+  defaultMintSplits: number;
   setTab: (tab: number) => void;
 }
 
 function ProjectOverview({
-  collectionData,
-  hasSplitter,
+  contract,
+  account,
+  ownerAddress,
+  name,
+  symbol,
+  editions,
+  totalEditions,
+  totalBalance,
+  tokens,
+  balance,
+  userBalance,
+  defaultMintSplits,
   setTab,
 }: ProjectOverviewProps) {
   const router = useRouter();
   const { cid, welcome } = router.query;
   const contractAddress = cid as string;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const contract = useNFTContract(contractAddress);
-  const { data: balance } = useETHBalance(contractAddress);
-  const { name, symbol, totalSupply, totalSupplyLimit, contentCount } = {
-    ...collectionData,
+  const isOwner = account == ownerAddress;
+  const userBalanceDisplay = isOwner ? balance?.sub(totalBalance) : userBalance;
+  const isBalance = userBalanceDisplay?.gt(BigNumber.from(0));
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    try {
+      let trx;
+      if (isOwner) {
+        trx = await contract.withdraw({ from: account });
+      } else {
+        trx = await contract.release(account, { from: account });
+      }
+      await trx.wait();
+    } catch (err) {}
+    setLoading(false);
   };
 
   return (
     <>
-      <Grid container item xs={12} sx={{ mb: "1rem" }}>
-        <Grid item xs={7}>
-          <Stack spacing={2}>
-            <Grid item>
-              <Typography variant="h3">{name}</Typography>
-              <Typography variant="body2" gutterBottom>
-                ({symbol})
+      <Grid container spacing={2} mb={"1rem"}>
+        <Grid item xs>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.grey[100],
+              height: "100%",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h2" gutterBottom>
+                {name}
               </Typography>
-            </Grid>
-            <Grid item>
-              <Typography variant="subtitle1">Contract Address:</Typography>
+              <Typography variant="body2">({symbol})</Typography>
               <Link
                 href={formatEtherscanLink("Account", [4, contractAddress])}
                 target={"_blank"}
               >
                 <Typography variant="body2">{contractAddress}</Typography>
               </Link>
-            </Grid>
-            <Grid container item xs={6}>
+            </CardContent>
+            <CardActions>
               <Button
-                variant="outlined"
-                sx={{ mr: ".75rem" }}
+                size="small"
                 onClick={() =>
                   router.push(`/collection?cid=${contractAddress}`)
                 }
@@ -72,8 +105,7 @@ function ProjectOverview({
                 View
               </Button>
               <Button
-                variant="outlined"
-                sx={{ mr: ".75rem" }}
+                size="small"
                 onClick={() => {
                   navigator.clipboard.writeText(
                     `${window.location.host}/collection?cid=${contractAddress}`
@@ -89,127 +121,102 @@ function ProjectOverview({
                 message="Link Copied"
                 onClose={() => setSnackbarOpen(false)}
               />
-            </Grid>
-          </Stack>
+            </CardActions>
+          </Card>
         </Grid>
-        <Grid item xs>
-          {welcome == "1" && (
-            <Alert severity="success" sx={{ lineHeight: "1.5rem" }}>
+        {welcome == "1" && (
+          <Grid item xs={4}>
+            <Alert
+              severity="success"
+              sx={{
+                lineHeight: "1.5rem",
+                height: "100%",
+                textAlign: "center",
+              }}
+              icon={false}
+            >
               <AlertTitle>Welcome!</AlertTitle>
               Congratulations on launching your NFT project. On this page you
               will find the tools for managing your project details, revenue
               splits, and more.
             </Alert>
-          )}
+          </Grid>
+        )}
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.grey[100],
+              height: "100%",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Progress
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {tokens?.toNumber()} / {totalEditions?.toNumber()} NFTs have
+                been minted.{" "}
+                {balance &&
+                  `The contract balance is: ${formatEther(balance)} Eth.`}{" "}
+                {userBalance &&
+                  `Your balance is: ${formatEther(userBalanceDisplay)} Eth.`}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <LoadingButton
+                loading={loading}
+                disabled={!isBalance}
+                onClick={handleClick}
+              >
+                Withdraw Revenue
+              </LoadingButton>
+            </CardActions>
+          </Card>
         </Grid>
-      </Grid>
-      <Grid item xs={6}>
-        <Stack spacing={1}>
-          <Typography variant="h5">Revenue</Typography>
-          <Grid container item>
-            <Grid container item spacing={2}>
-              <Grid item xs>
-                <Card sx={{ height: "100%" }}>
-                  <CardContent>
-                    <Typography variant="subtitle1">Balance</Typography>
-                    <Typography variant="h4" gutterBottom>
-                      {formatEther(balance?.toNumber() ?? 0)} Ξ
-                    </Typography>
-                    <LoadingButton
-                      variant="contained"
-                      color="secondary"
-                      size="medium"
-                      onClick={async () => await contract.withdraw()}
-                      disabled={balance?.toNumber() == 0}
-                    >
-                      Withdraw
-                    </LoadingButton>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs>
-                <Card sx={{ height: "100%" }}>
-                  <CardContent>
-                    <Typography variant="subtitle1" gutterBottom>
-                      Splits
-                    </Typography>
-                    <Typography variant="body2">
-                      {hasSplitter
-                        ? "You're splitting revenue with collaborators."
-                        : "100% of your NFT sale revenue is going to you."}
-                    </Typography>
-                    <br />
-                    <LoadingButton
-                      variant="outlined"
-                      color="secondary"
-                      size="medium"
-                      onClick={() => setTab(1)}
-                    >
-                      {hasSplitter ? "Manage Splits" : "Split Revenue"}
-                    </LoadingButton>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Stack>
-      </Grid>
-      <Grid item xs={6}>
-        <Stack spacing={1}>
-          <Typography variant="h5">Progress</Typography>
-          <Grid container item>
-            <Grid container item spacing={2}>
-              <Grid item xs>
-                <Card sx={{ height: "100%" }}>
-                  <CardContent>
-                    <Typography variant="subtitle1">Minted</Typography>
-                    <Typography variant="h5">
-                      {`${totalSupply?.toNumber()} / ${totalSupplyLimit?.toNumber()}`}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs>
-                <Card sx={{ height: "100%" }}>
-                  <CardContent>
-                    <Typography variant="subtitle1">Space</Typography>
-                    <Typography variant="h5">{`${totalSupplyLimit?.toNumber()} / ${2000}`}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Stack>
-      </Grid>
-      <Grid item xs={6}>
-        <Stack spacing={1}>
-          <Typography variant="h5">Content</Typography>
-          <Grid container item>
-            <Grid container item spacing={2}>
-              <Grid item xs={6}>
-                <Card sx={{ height: "100%" }}>
-                  <CardContent>
-                    <Typography variant="subtitle1">
-                      Pieces of Content
-                    </Typography>
-                    <Typography variant="h5">
-                      {contentCount?.toNumber()}
-                    </Typography>
-                    <br />
-                    <LoadingButton
-                      variant="outlined"
-                      color="secondary"
-                      size="medium"
-                      onClick={() => setTab(2)}
-                    >
-                      Manage Content
-                    </LoadingButton>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Stack>
+        <Grid item xs={4}>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.grey[100],
+              height: "100%",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Splits
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                You have {defaultMintSplits} default mint splits configured.
+                Share some revenue with your collaborators!
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button onClick={() => setTab(1)}>Add Splits</Button>
+            </CardActions>
+          </Card>
+        </Grid>
+        <Grid item xs={4}>
+          <Card
+            sx={{
+              backgroundColor: theme.palette.grey[100],
+              height: "100%",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Content
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                You have {editions.length} piece{editions.length > 1 ? "s" : ""}{" "}
+                of content in your project. Send more content to the blockchain!
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button onClick={() => setTab(2)}>Add Content</Button>
+            </CardActions>
+          </Card>
+        </Grid>
       </Grid>
     </>
   );

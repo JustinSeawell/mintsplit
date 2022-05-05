@@ -1,43 +1,49 @@
+import { DeleteForever } from "@mui/icons-material";
 import {
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
   Divider,
   Grid,
   Stack,
-  styled,
   TextField,
   Typography,
 } from "@mui/material";
 import { ChangeEvent } from "react";
 import theme from "../../theme";
 import { Song } from "../../types/Song";
+import { SongInputError, validate } from "../../validation/song";
+import { Input } from "../Input";
+import { Label } from "../Label";
 import SongCardPreview from "./SongCardPreview";
-
-const Input = styled("input")({
-  display: "none",
-});
-
-const Label = styled("label")({
-  display: "inline-block",
-});
 
 interface SongInputProps {
   index: number;
   song: Song;
   setSong: (newSong: Song, index: number) => void;
+  deleteSong: (index: number) => void;
+  setError: (newError: SongInputError, index: number) => void;
+  error?: SongInputError;
 }
 
-function SongInput({ index, song, setSong }: SongInputProps) {
+function SongInput({
+  index,
+  song,
+  setSong,
+  deleteSong,
+  error,
+  setError,
+}: SongInputProps) {
   const { name = "", editions = 0, art, audio } = song;
   const { name: fileName } = audio;
+
+  const handleDelete = () => {
+    deleteSong(index);
+  };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newSong = { ...song };
     newSong.name = e.target.value;
     setSong(newSong, index);
+    setError(validate(newSong, "name"), index);
   };
 
   const handleEditionsChange = (
@@ -46,12 +52,14 @@ function SongInput({ index, song, setSong }: SongInputProps) {
     const newSong = { ...song };
     newSong.editions = parseInt(e.target.value);
     setSong(newSong, index);
+    setError(validate(newSong, "editions"), index);
   };
 
   const handleArtChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newSong = { ...song };
     newSong.art = e.target.files[0];
     setSong(newSong, index);
+    setError(validate(newSong, "artwork"), index);
   };
 
   return (
@@ -59,23 +67,33 @@ function SongInput({ index, song, setSong }: SongInputProps) {
       <Grid container item spacing={1} mb={"1rem"}>
         <Grid item xs={7}>
           <Stack spacing={2} width={"95%"}>
-            <Typography
-              variant="h6"
-              color={theme.palette.primary.light}
-              textAlign={"left"}
-              gutterBottom
-            >
-              {fileName}
-            </Typography>
+            <Grid container justifyContent={"space-between"}>
+              <Typography
+                variant="h6"
+                color={theme.palette.grey[600]}
+                textAlign={"left"}
+                gutterBottom
+                flexWrap={"wrap"}
+              >
+                {fileName}
+              </Typography>
+              <Button onClick={handleDelete}>
+                <DeleteForever color={"action"} />
+              </Button>
+            </Grid>
             <TextField
               value={name}
               placeholder={fileName}
               label="Song Name"
               onChange={handleNameChange}
+              error={!!error?.name}
+              helperText={error?.name}
             />
             <TextField
               label="Editions"
-              helperText="# of NFTs available for this song"
+              helperText={
+                error?.editions ?? "# of NFTs available for this song"
+              }
               variant="outlined"
               type={"number"}
               InputProps={{
@@ -84,6 +102,7 @@ function SongInput({ index, song, setSong }: SongInputProps) {
               }}
               value={editions || ""}
               onChange={handleEditionsChange}
+              error={!!error?.editions}
             />
             <Label htmlFor={`art-file-${index}`}>
               <Input
@@ -97,9 +116,15 @@ function SongInput({ index, song, setSong }: SongInputProps) {
                 size="large"
                 component="span"
                 fullWidth
+                color={!!error?.artwork ? "error" : "primary"}
               >
                 Upload Artwork
               </Button>
+              {error?.artwork && (
+                <Typography variant="caption" color={theme.palette.error.main}>
+                  {error?.artwork}
+                </Typography>
+              )}
             </Label>
             {art && (
               <Typography

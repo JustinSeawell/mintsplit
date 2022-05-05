@@ -11,12 +11,10 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useRevenueSplits } from "../../contexts/RevenueSplit";
 import theme from "../../theme";
 import { Song } from "../../types/Song";
 import Image from "next/image";
 import { shortenHex } from "../../util";
-import { convertToPercentage } from "../ManageRevenueSplits/convertToBps";
 
 interface SongCardProps {
   song: Song;
@@ -24,7 +22,6 @@ interface SongCardProps {
 }
 
 function SongCard({ song, index }: SongCardProps) {
-  const { mintSplits, royaltySplits } = useRevenueSplits();
   const {
     name,
     editions,
@@ -90,58 +87,6 @@ function SongCard({ song, index }: SongCardProps) {
             </Box>
           </Grid>
         </Grid>
-        {/* <Grid item mt={"2rem"}>
-          <Typography variant="subtitle2" gutterBottom>
-            Primary Sale (Mint) Splits
-          </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Address</TableCell>
-                  <TableCell>Split %</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {mintSplits[index].splits.map(
-                  ({ recipient, bps }, mintIndex) => (
-                    <TableRow key={`mint-${mintIndex}`}>
-                      <TableCell>{shortenHex(recipient, 4)}</TableCell>
-                      <TableCell>{convertToPercentage(bps)}</TableCell>
-                    </TableRow>
-                  )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid> */}
-        {/* <Grid item mt={"2rem"}>
-          <Typography variant="subtitle2" gutterBottom>
-            Secondary Sale (Royalty) Splits
-          </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Address</TableCell>
-                  <TableCell>Split %</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {royaltySplits[index].splits.map(
-                  ({ recipient, bps }, royaltyIndex) => (
-                    <TableRow key={`royalty-${royaltyIndex}`}>
-                      <TableCell>{shortenHex(recipient, 4)}</TableCell>
-                      <TableCell>
-                        {convertToPercentage(bps).toFixed(0)}
-                      </TableCell>
-                    </TableRow>
-                  )
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid> */}
       </CardContent>
     </Card>
   );

@@ -7,32 +7,31 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 import useContentData from "../hooks/useContentData";
 import theme from "../theme";
 
 interface NFTCardProps {
   contractAddress: string;
   contentId: number;
+  qty?: number;
+  disabled?: boolean;
   handleQtyChange: (id: number, amount: number) => void;
 }
 
 function NFTCard({
   contractAddress,
   contentId,
+  qty,
+  disabled,
   handleQtyChange,
 }: NFTCardProps) {
-  const { data } = useContentData(contractAddress, contentId);
+  const { data } = useContentData(contractAddress, contentId); // TODO: Use new content hook
   const { supply, limit, content } = { ...data };
   const { name, image, audio } = { ...content };
-  const [amount, setAmount] = useState<number>(0);
 
   const handleChange = (newAmount: number) => {
-    setAmount(newAmount);
     handleQtyChange(contentId, newAmount);
   };
-
-  // TODO: Add content media
 
   return (
     <Card sx={{ borderRadius: 2, textAlign: "left" }}>
@@ -81,12 +80,13 @@ function NFTCard({
                 variant="outlined"
                 type={"number"}
                 fullWidth
-                value={amount}
+                value={qty ?? ""}
                 InputProps={{
                   inputMode: "numeric",
                   inputProps: { min: 0 },
                 }}
                 onChange={(e) => handleChange(parseInt(e.target.value))}
+                disabled={disabled}
               />
             </Grid>
           </CardContent>

@@ -7,7 +7,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "../theme";
 import { SongsProvider } from "../contexts/Songs";
 import { ProjectProvider } from "../contexts/Project";
-import { RevenueSplitProvider } from "../contexts/RevenueSplit";
 import { NetworkProviderProvider } from "../contexts/NetworkProvider";
 
 function NextWeb3App({ Component, pageProps }: AppProps) {
@@ -21,9 +20,7 @@ function NextWeb3App({ Component, pageProps }: AppProps) {
         <ThemeProvider theme={theme}>
           <SongsProvider>
             <ProjectProvider>
-              <RevenueSplitProvider>
-                <Component {...pageProps} />
-              </RevenueSplitProvider>
+              <Component {...pageProps} />
             </ProjectProvider>
           </SongsProvider>
         </ThemeProvider>

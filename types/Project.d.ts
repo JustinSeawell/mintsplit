@@ -4,6 +4,5 @@ export type Project = {
   description: string;
   artistName: string;
   mintCost: number;
-  mintLimit: number;
   releaseDate: Date;
 };

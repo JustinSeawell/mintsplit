@@ -25,8 +25,6 @@ contract MintSplitERC721 is ERC721Upgradeable, OwnableUpgradeable, ReentrancyGua
     uint256 public totalBalance;
     bool public isPaused;
     MintSplit.Params private params;
-    MintSplit.PaymentSplit defaultMintSplit;
-    MintSplit.PaymentSplit defaultRoyaltySplit;
     Counters.Counter public tokens;
 
     mapping (uint => string) public contentURI;
@@ -94,7 +92,7 @@ contract MintSplitERC721 is ERC721Upgradeable, OwnableUpgradeable, ReentrancyGua
             tokenContent[tid] = cid;
             tokenEdition[tid] = currentSupply+1;
             _mint(msg.sender, tid);
-            if (defaultMintSplit.recipients.length > 0 || mintSplitOverride[cid]) _updateBalance(cid);
+            if (msg.sender != owner() && mintSplitOverride[cid]) _updateBalance(cid);
         }
     }
 
@@ -151,15 +149,6 @@ contract MintSplitERC721 is ERC721Upgradeable, OwnableUpgradeable, ReentrancyGua
     }
     
     /**
-    Get default splits
-    @return mintSplit the default mint splits
-    @return royaltySplit the default royalty splits
-    */
-    function getDefaultSplits() external view returns(MintSplit.PaymentSplit memory mintSplit, MintSplit.PaymentSplit memory royaltySplit) {
-        return (defaultMintSplit, defaultRoyaltySplit);
-    }
-    
-    /**
     Get splits for a specific content
     @param cid the id for the content to retrieve splits
     @param isMint flag for determining split type
@@ -193,16 +182,11 @@ contract MintSplitERC721 is ERC721Upgradeable, OwnableUpgradeable, ReentrancyGua
     /**
     Set split
     @param config the data for configuring the content split
-    @param isDefault flag for setting default splits
     */
-    function setSplit(MintSplit.PaymentSplitConfig calldata config, bool isDefault) external onlyOwner {
+    function setSplit(MintSplit.PaymentSplitConfig calldata config) external onlyOwner {
         MintSplit.PaymentSplit calldata split = config.split;
         require(split.recipients.length < 6);
         require(split.recipients.length == split.bps.length);
-        if (isDefault) {
-            config.isMint ? (defaultMintSplit = split) : (defaultRoyaltySplit = split);
-            return;
-        }
         uint cid = config.contentId;
         require(cid > 0);
         if (config.isMint) {
@@ -239,10 +223,11 @@ contract MintSplitERC721 is ERC721Upgradeable, OwnableUpgradeable, ReentrancyGua
     @param cid the id of content for which to update the contract balance
     */
     function _updateBalance(uint256 cid) internal {
-        MintSplit.PaymentSplit storage split = mintSplitOverride[cid] ? mintSplits[cid] : defaultMintSplit;
-        totalBalance += params.mintPrice;
+        MintSplit.PaymentSplit storage split = mintSplits[cid];
         for(uint256 i; i < split.recipients.length; i++) {
-            balance[split.recipients[i]] += (params.mintPrice*split.bps[i])/10000;
+            uint share = (params.mintPrice*split.bps[i])/10000;
+            totalBalance += share;
+            balance[split.recipients[i]] += share;
         }
     }
 }

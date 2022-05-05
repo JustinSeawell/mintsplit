@@ -1,10 +1,14 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 interface OrderSummaryProps {
   fee: string;
+  caption?: string;
 }
 
-function OrderSummary({ fee }: OrderSummaryProps) {
+function OrderSummary({ fee, caption }: OrderSummaryProps) {
+  const text =
+    caption ??
+    "This is the cost to deploy your NFT project to the Ethereum blockchain.";
   return (
     <Box
       textAlign={"left"}
@@ -19,9 +23,7 @@ function OrderSummary({ fee }: OrderSummaryProps) {
       <Typography fontSize={"1.5rem"} fontWeight={300}>
         Total: {fee} (+ gas) Ξ
       </Typography>
-      <Typography variant="caption">
-        This is the cost to deploy your NFT project to the blockchain.
-      </Typography>
+      <Typography variant="caption">{text}</Typography>
     </Box>
   );
 }

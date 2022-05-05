@@ -1,10 +1,10 @@
-import { Web3Provider } from "@ethersproject/providers";
 import { formatEther, parseEther } from "@ethersproject/units";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
+import { Interval, intervalToDuration, isAfter } from "date-fns";
+import { BigNumber } from "ethers";
 import { useRouter } from "next/dist/client/router";
-import Head from "next/head";
 import { useEffect, useState } from "react";
 import CountdownTimer from "../components/CountdownTimer";
 import Layout from "../components/Layout";
@@ -12,112 +12,170 @@ import NFTCard from "../components/NFTCard";
 import useCollectionData from "../hooks/useCollectionData";
 import useNFTContract from "../hooks/useNFTContract";
 
-/**
- * TODO:
- * - Check to make sure contract exists in nft factory project
- * - Send to 404 if cid is invalid
- */
+const TITLE = "Collection";
+const MINT_LIMIT = 20;
+
 function Collection() {
+  const { account } = useWeb3React();
   const router = useRouter();
   const { cid } = router.query;
   const contractAddress = cid as string;
-  const erc721 = useNFTContract(contractAddress);
+  const contract = useNFTContract(contractAddress);
   const { data } = useCollectionData(contractAddress);
-  const { account } = useWeb3React<Web3Provider>();
-  const {
-    name,
-    secondsUntilMinting,
-    contentCount,
-    mintPrice,
-    totalSupply,
-    totalSupplyLimit,
-  } = {
-    ...data,
-  };
+  const { params, editions, isPaused, owner } = { ...data };
+  const { name, mintPrice, releaseTime } = { ...params };
+  const isOwner = account == owner;
   const [contentQty, setContentQty] = useState<Map<number, number>>(null);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [isReleased, setIsReleased] = useState(false);
+  const [error, setError] = useState("");
+  const formattedMintPrice = mintPrice ? formatEther(mintPrice) : "";
+  const totalFee = (totalAmount * parseFloat(formattedMintPrice)).toPrecision(
+    3
+  );
+
+  useEffect(() => {
+    if (!releaseTime) return;
+
+    const releaseDate = new Date(releaseTime?.toNumber() * 1000);
+    const now = new Date();
+
+    setIsReleased(isAfter(now, releaseDate));
+  }, [releaseTime]);
 
   const handleQtyChange = (id: number, amount: number) => {
     const newMap = new Map<number, number>(contentQty);
-    newMap.set(id, amount);
+    isNaN(amount) ? newMap.delete(id) : newMap.set(id, amount);
     setContentQty(newMap);
-  };
-
-  const handleSubmit = async () => {
-    const ids = [];
-    contentQty.forEach((amount, id) => {
-      ids.push(...Array(amount).fill(id));
-    });
-
-    await erc721.mint(ids, {
-      from: account,
-      value: parseEther(
-        (totalAmount * parseFloat(formatEther(mintPrice))).toPrecision(3)
-      ),
-    });
   };
 
   useEffect(() => {
     if (!mintPrice) return;
 
     let newTotalAmount = 0;
-    contentQty?.forEach((amount, contentId) => {
+    contentQty?.forEach((amount) => {
       newTotalAmount += amount;
     });
 
     setTotalAmount(newTotalAmount);
   }, [contentQty, mintPrice]);
 
-  /**
-   * TODO:
-   * - alert message when artist is viewing the page
-   * - mint instructions
-   * - artist info
-   * - countdown clock
-   */
+  useEffect(() => {
+    setError(totalAmount > MINT_LIMIT ? "Exceeded Mint Limit" : "");
+  }, [totalAmount]);
+
+  const clearSelected = () => {
+    const newMap = new Map<number, number>(contentQty);
+    newMap.clear();
+    setContentQty(newMap);
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    const ids = [];
+    contentQty.forEach((amount, id) => {
+      ids.push(...Array(amount).fill(id));
+    });
+
+    try {
+      const opts = { from: account } as { from: string; value: BigNumber };
+      if (!isOwner) opts.value = parseEther(totalFee);
+
+      const trx = await contract.mint(ids, opts);
+      await trx.wait();
+
+      setSuccess(true);
+      clearSelected();
+    } catch (err) {
+      // TODO: Report to sentry
+      setError("There was a problem when minting. Please try again later.");
+    }
+
+    setLoading(false);
+    window.scrollTo(0, 0);
+  };
+
+  if (!data)
+    return (
+      <>
+        <Layout title={TITLE}>
+          <section>
+            {
+              <Grid marginY={"2rem"}>
+                <CircularProgress size={80} />
+              </Grid>
+            }
+          </section>
+        </Layout>
+      </>
+    );
 
   return (
     <>
-      <Head>
-        <title>MintSplit | Collection</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Layout>
-        {!data && <CircularProgress size={80} />}
-        {data && (
-          <>
-            {!account && (
-              <Grid item xs={8} marginX={"auto"} mb={"2rem"}>
-                <Alert severity="info">Connect to MetaMask to mint NFTs.</Alert>
-              </Grid>
-            )}
-            <Typography variant="h2" gutterBottom>
-              {name}
-            </Typography>
-            {secondsUntilMinting.toNumber() <= 0 && (
-              <Typography variant="h4" gutterBottom>
-                Minted {totalSupply.toString()} / {totalSupplyLimit.toString()}
-              </Typography>
-            )}
-            {secondsUntilMinting.toNumber() > 0 && (
-              <CountdownTimer secondsRemaining={10000} />
-            )}
-            <Grid container marginX={"auto"} justifyContent={"center"}>
-              <Grid container item xs={8} spacing={3} mt={"1.5rem"}>
-                {Array.from(Array(contentCount.toNumber()).keys()).map(
-                  (n, i, arr) => (
-                    <Grid key={n} item xs={12} md={6} xl={4}>
-                      <NFTCard
-                        contractAddress={contractAddress}
-                        contentId={n + 1}
-                        handleQtyChange={handleQtyChange}
-                      />
-                    </Grid>
-                  )
-                )}
-              </Grid>
+      <Layout title={TITLE}>
+        <section>
+          {success && (
+            <Grid item xs={6} marginX={"auto"} mb={"2rem"}>
+              <Alert severity="success">NFT Mint Successful!</Alert>
             </Grid>
-            <Grid item xs={8} mt={"2rem"} marginX={"auto"}>
+          )}
+          {isPaused && (
+            <Grid item xs={6} marginX={"auto"} mb={"2rem"}>
+              <Alert severity="warning">
+                This Contract is paused. Minting is temporarily disabled.
+              </Alert>
+            </Grid>
+          )}
+          {isOwner && !isReleased && (
+            <Grid item xs={6} marginX={"auto"} mb={"2rem"}>
+              <Alert severity="info">
+                Only (you) the creator can mint before the release date.
+              </Alert>
+            </Grid>
+          )}
+          {error && (
+            <Grid item xs={6} marginX={"auto"} mb={"2rem"}>
+              <Alert severity="error">{error}</Alert>
+            </Grid>
+          )}
+          <Typography variant="h2" gutterBottom fontWeight={500}>
+            {name}
+          </Typography>
+          {releaseTime && !isReleased && (
+            <CountdownTimer releaseTime={releaseTime?.toNumber()} />
+          )}
+          <Grid container marginX={"auto"} justifyContent={"center"}>
+            <Grid container item xs={12} sm={8} md={10} xl={12} spacing={3}>
+              {editions?.map((edition, index) => {
+                if (edition?.isZero()) return;
+
+                return (
+                  <Grid key={`nft-card-${index}`} item xs={12} md={6} xl={4}>
+                    <NFTCard
+                      contractAddress={contractAddress}
+                      contentId={index + 1}
+                      qty={contentQty?.get(index + 1)}
+                      handleQtyChange={handleQtyChange}
+                      disabled={(!isReleased && !isOwner) || isPaused}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Grid>
+          {!isOwner && (
+            <Grid
+              item
+              xs={12}
+              sm={8}
+              md={10}
+              xl={12}
+              mt={"2rem"}
+              marginX={"auto"}
+            >
               <Box
                 textAlign={"left"}
                 bgcolor={"#F5F5F5"}
@@ -129,26 +187,23 @@ function Collection() {
                   Total Cost
                 </Typography>
                 <Typography gutterBottom>
-                  {totalAmount} NFTs x {formatEther(mintPrice)} Ξ
+                  {totalAmount} NFTs x {formattedMintPrice} Ξ
                 </Typography>
                 <Typography fontSize={"1.5rem"} fontWeight={300}>
-                  Total:{" "}
-                  {(
-                    totalAmount * parseFloat(formatEther(mintPrice))
-                  ).toPrecision(3)}{" "}
-                  Ξ (+ gas)
+                  Total: {totalFee} Ξ (+ gas)
                 </Typography>
                 <Typography variant="caption">
                   This is the cost to mint your selected NFTs on the blockchain.
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={8} marginX={"auto"}>
+          )}
+          {(isReleased || isOwner) && !isPaused && (
+            <Grid item xs={12} sm={8} md={10} xl={12} marginX={"auto"}>
               <LoadingButton
                 variant="contained"
-                // loading={loading}
-                // disabled={loading || !isConnected || !isRinkeby} // TODO: Update this to check for mainnet
-                disabled={!account}
+                loading={loading}
+                disabled={!account || !!error}
                 color="secondary"
                 component="span"
                 fullWidth
@@ -162,8 +217,8 @@ function Collection() {
                 <Typography variant="h6">Mint</Typography>
               </LoadingButton>
             </Grid>
-          </>
-        )}
+          )}
+        </section>
       </Layout>
     </>
   );

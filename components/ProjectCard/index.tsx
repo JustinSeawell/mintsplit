@@ -4,15 +4,13 @@ import {
   CardActions,
   CardContent,
   CircularProgress,
-  Grid,
-  LinearProgress,
+  Skeleton,
   Snackbar,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
 import useCollectionData from "../../hooks/useCollectionData";
-import { formatEtherscanLink } from "../../util";
 
 interface ProjectCardProps {
   address: string;
@@ -22,15 +20,19 @@ function ProjectCard({ address }: ProjectCardProps) {
   const router = useRouter();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { data } = useCollectionData(address);
-  const { name } = { ...data };
-  // const totalSupplyLimitNum = totalSupplyLimit?.toNumber();
-  // const maxLimitNum = maxLimit?.toNumber();
+  const { params } = { ...data };
+  const { name } = { ...params };
 
   if (!data)
     return (
       <Card>
         <CardContent>
-          <CircularProgress />
+          <Skeleton variant="text" sx={{ mb: "1rem" }} />
+          <CardActions>
+            <Skeleton variant="text" width={"10%"} />
+            <Skeleton variant="text" width={"10%"} />
+            <Skeleton variant="text" width={"10%"} />
+          </CardActions>
         </CardContent>
       </Card>
     );
@@ -38,34 +40,7 @@ function ProjectCard({ address }: ProjectCardProps) {
   return (
     <Card sx={{ textAlign: "left" }}>
       <CardContent>
-        <Typography variant="h5" gutterBottom>
-          {name}
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          {/* Minted {totalSupply.toString()} / {totalSupplyLimit.toString()} */}
-        </Typography>
-        <Grid mt={"1.5rem"}>
-          <Typography variant="subtitle2" gutterBottom>
-            Space
-          </Typography>
-          {/* <Grid item xs={8}>
-            <LinearProgress
-              variant="determinate"
-              color="secondary"
-              value={(totalSupplyLimitNum / maxLimitNum) * 100}
-              sx={{ mb: ".5rem" }}
-            />
-          </Grid>
-          <Typography variant="caption">
-            {totalSupplyLimitNum} of {maxLimitNum} NFTs used
-          </Typography> */}
-        </Grid>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={3000}
-          message="Link Copied"
-          onClose={() => setSnackbarOpen(false)}
-        />
+        <Typography variant="h5">{name}</Typography>
       </CardContent>
       <CardActions>
         <Button onClick={() => router.push(`/project?cid=${address}`)}>
@@ -85,6 +60,12 @@ function ProjectCard({ address }: ProjectCardProps) {
           Share
         </Button>
       </CardActions>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        message="Link Copied"
+        onClose={() => setSnackbarOpen(false)}
+      />
     </Card>
   );
 }

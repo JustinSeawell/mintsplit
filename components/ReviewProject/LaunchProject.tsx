@@ -1,71 +1,62 @@
 import { parseEther } from "@ethersproject/units";
 import { LoadingButton } from "@mui/lab";
-import { Alert, Grid, Typography } from "@mui/material";
+import { Alert, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
+import mixpanel from "mixpanel-browser";
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
 import { defaultProject, useProject } from "../../contexts/Project";
-import { useRevenueSplits } from "../../contexts/RevenueSplit";
 import { useSongs } from "../../contexts/Songs";
-import { ProjectParamsStruct } from "../../contracts/types/MintSplitFactory";
+import { ParamsStruct } from "../../contracts/types/MintSplitFactory";
 import useETHBalance from "../../hooks/useETHBalance";
 import useMintSplitFactory from "../../hooks/useMintSplitFactory";
+import { uploadSongs } from "../../utils/upload";
 import { getProjectCreated } from "./getProjectCreated";
-import { uploadMetadata } from "./uploadMetadata";
 
 interface LaunchProjectProps {
-  deploymentFee: BigNumber;
+  deploymentFee?: BigNumber;
   setLoadingMessage: (msg: string) => void;
+  tokens: number;
 }
 
 function LaunchProject({
   deploymentFee,
   setLoadingMessage,
+  tokens,
 }: LaunchProjectProps) {
   const router = useRouter();
   const { account, library, chainId } = useWeb3React();
   const { data: ethBalance } = useETHBalance(account);
   const isConnected = typeof account === "string" && !!library;
-  const isRinkeby = chainId === 4;
+  const isOnNetwork = chainId === parseInt(process.env.NEXT_PUBLIC_CHAIN_ID);
   const [loading, setLoading] = useState(false);
   const mintSplitFactory = useMintSplitFactory();
-  const { setMintSplits, setRoyaltySplits } = useRevenueSplits();
   const { songs, setSongs } = useSongs();
   const [error, setError] = useState(false);
   const { project, setProject } = useProject();
-  const [params, setParams] = useState<ProjectParamsStruct>(null);
+  const [params, setParams] = useState<ParamsStruct>(null);
 
-  const {
-    name: projectName,
-    symbol,
-    mintCost,
-    mintLimit,
-    releaseDate,
-  } = project;
+  const { name, symbol, mintCost, releaseDate } = project;
 
   const sufficientEth =
     !ethBalance || !deploymentFee ? false : ethBalance.gte(deploymentFee);
 
-  const clearAppState = () => {
-    setSongs([]);
-    setProject({ ...defaultProject });
-    setMintSplits([]);
-    setRoyaltySplits([]);
-  };
-
-  const submitProject = async (_params: ProjectParamsStruct) => {
+  const submitProject = async (
+    _params: ParamsStruct,
+    _editions: BigNumberish[]
+  ) => {
     setLoadingMessage("Sending to the blockchain...");
-    const trx = await mintSplitFactory.createProject(_params, {
+    const trx = await mintSplitFactory.createProject(_params, _editions, {
       from: account,
       value: deploymentFee,
     });
 
     const receipt = await trx.wait();
+    mixpanel.track("launched project", { content: _editions.length, tokens });
     const { args } = getProjectCreated(receipt);
     const [contractAddr] = args;
 
-    clearAppState(); // TODO: Debug this
     router.push(`/project?cid=${contractAddr}&welcome=1`);
   };
 
@@ -73,35 +64,24 @@ function LaunchProject({
     setLoading(true);
 
     try {
-      if (params) {
-        // TODO: Fix error here
-        /**
-         * If metadata is already uploaded then just submit
-         * the project instead of re-uploading everything.
-         */
-        await submitProject(params);
-        return;
-      }
-
-      const { dir } = await uploadMetadata(songs, project, setLoadingMessage);
+      const { dir } = await uploadSongs(songs, project);
 
       setLoadingMessage("Prepping your NFTs...");
       const _params = {
-        projectName,
+        name,
         symbol: symbol.toUpperCase(),
-        contentCount: songs.length,
-        editions: songs.map((s) => s.editions),
+        baseURI: `ipfs://${dir}/`,
         mintPrice: parseEther(mintCost.toString()),
         releaseTime: Math.round(releaseDate.getTime() / 1000), // TODO: Test this
-        baseURI: `ipfs://${dir}/`,
-        package: 0, // Default package
-      } as ProjectParamsStruct;
+      } as ParamsStruct;
 
-      setParams(_params);
-
-      await submitProject(_params);
+      await submitProject(
+        _params,
+        songs.map((s) => s.editions)
+      );
     } catch (err) {
       // TODO: Report to sentry
+      // TODO: Double check this pattern for errors
       console.error(err);
       setLoadingMessage(null);
       setError(true);
@@ -124,7 +104,7 @@ function LaunchProject({
       <LoadingButton
         variant="contained"
         loading={loading}
-        disabled={loading || !isConnected || !isRinkeby || !sufficientEth} // TODO: Update this to check for mainnet
+        disabled={loading || !isConnected || !isOnNetwork || !sufficientEth} // TODO: Update this to check for mainnet
         color="secondary"
         component="span"
         fullWidth

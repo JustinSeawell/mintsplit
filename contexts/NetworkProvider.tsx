@@ -3,6 +3,7 @@ import { useWeb3React } from "@web3-react/core";
 import { NetworkConnector } from "@web3-react/network-connector";
 import { createContext, useContext, useEffect, useState } from "react";
 import useNetworkConnection from "../hooks/useNetworkConnection";
+import { NETWORK_NAMES } from "../util";
 
 interface NetworkProviderContextValue {
   provider?: JsonRpcProvider;
@@ -17,7 +18,10 @@ const NetworkProviderContext =
 
 const getProvider = async (connector: NetworkConnector) => {
   const { url } = await connector.getProvider();
-  return new JsonRpcProvider(url, { name: "rinkeby", chainId: 4 }); // TODO: Update this to all chains
+  return new JsonRpcProvider(url, {
+    name: NETWORK_NAMES[process.env.NEXT_PUBLIC_CHAIN_ID],
+    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID),
+  });
 };
 
 export const NetworkProviderProvider = ({ children }) => {

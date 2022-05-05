@@ -7,7 +7,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import mixpanel from "mixpanel-browser";
+import { ChangeEvent, useState } from "react";
 import { useProject } from "../../contexts/Project";
+import { ProjectInputError, validate } from "../../validation/project";
 import SetupNav from "../SetupNav";
 
 interface ManageProjectProps {
@@ -17,15 +20,44 @@ interface ManageProjectProps {
 
 function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
   const { project, setProject } = useProject();
-  const {
-    name,
-    symbol,
-    description,
-    artistName,
-    mintCost,
-    mintLimit,
-    releaseDate,
-  } = project;
+  const { name, symbol, description, artistName, mintCost, releaseDate } =
+    project;
+  const [inputError, setInputError] = useState<ProjectInputError>({});
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newProject = { ...project, name: e.target.value };
+    setProject(newProject);
+    setInputError(validate(newProject, "name"));
+  };
+
+  const handleSymbolChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newProject = { ...project, symbol: e.target.value };
+    setProject(newProject);
+    setInputError(validate(newProject, "symbol"));
+  };
+
+  const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newProject = { ...project, description: e.target.value };
+    setProject(newProject);
+    setInputError(validate(newProject, "description"));
+  };
+
+  const handleArtistNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newProject = { ...project, artistName: e.target.value };
+    setProject(newProject);
+    setInputError(validate(newProject, "artistName"));
+  };
+
+  const handleNext = () => {
+    const newError = validate(project);
+
+    if (Object.keys(newError).length > 0) {
+      setInputError(newError);
+      return;
+    }
+    mixpanel.track("added project details");
+    onSuccess();
+  };
 
   return (
     <>
@@ -44,9 +76,9 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
                 variant="outlined"
                 fullWidth
                 value={name}
-                onChange={(e) =>
-                  setProject({ ...project, name: e.target.value })
-                }
+                onChange={handleNameChange}
+                error={!!inputError?.name}
+                helperText={inputError?.name}
               />
             </Grid>
             <Grid item xs>
@@ -55,12 +87,12 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
                 variant="outlined"
                 fullWidth
                 value={symbol}
-                onChange={(e) =>
-                  setProject({ ...project, symbol: e.target.value })
-                }
+                onChange={handleSymbolChange}
                 InputProps={{
                   inputProps: { style: { textTransform: "uppercase" } },
                 }}
+                error={!!inputError?.symbol}
+                helperText={inputError?.symbol}
               />
             </Grid>
           </Grid>
@@ -71,9 +103,9 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
             multiline
             rows={3}
             value={description}
-            onChange={(e) =>
-              setProject({ ...project, description: e.target.value })
-            }
+            onChange={handleDescriptionChange}
+            error={!!inputError?.description}
+            helperText={inputError?.description}
           />
           <Grid container>
             <Grid item xs={9} mr={"1rem"}>
@@ -82,9 +114,9 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
                 variant="outlined"
                 fullWidth
                 value={artistName}
-                onChange={(e) =>
-                  setProject({ ...project, artistName: e.target.value })
-                }
+                onChange={handleArtistNameChange}
+                error={!!inputError?.artistName}
+                helperText={inputError?.artistName}
               />
             </Grid>
             <Grid item xs>
@@ -158,7 +190,11 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
         </Stack>
       </Grid>
       <Grid item xs={10} mt={"2rem"} marginX={"auto"}>
-        <SetupNav handleNext={onSuccess} handleBack={handleBack} />
+        <SetupNav
+          handleNext={handleNext}
+          handleBack={handleBack}
+          nextDisabled={Object.keys(inputError).length > 0}
+        />
       </Grid>
     </>
   );

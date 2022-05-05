@@ -1,4 +1,7 @@
+import { Container } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import Head from "next/head";
+import ElevationScroll from "./ElevationScroll";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
@@ -7,11 +10,22 @@ const Main = styled("main")({
   textAlign: "center",
 });
 
-export default function Layout({ children }) {
+interface LayoutProps {
+  title?: string;
+  children: any;
+}
+
+export default function Layout({ title, children }: LayoutProps) {
   return (
     <>
+      <Head>
+        <title>{title ? `${title} | ` : ""}MintSplit</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Navbar />
-      <Main>{children}</Main>
+      <Main>
+        <Container maxWidth="lg">{children}</Container>
+      </Main>
       <Footer />
     </>
   );

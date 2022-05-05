@@ -1,49 +1,79 @@
-import { formatEther, parseEther } from "@ethersproject/units";
-import { CircularProgress, Grid, Stack, Typography } from "@mui/material";
+import { formatEther } from "@ethersproject/units";
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  CircularProgress,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { useSongs } from "../../contexts/Songs";
-import usePackages from "../../hooks/usePackages";
+import useTokenFee from "../../hooks/useTokenFee";
+import BackButton from "../BackButton";
+import LoadingMessage from "../LoadingMessage";
 import OrderSummary from "../OrderSummary";
 import LaunchProject from "./LaunchProject";
 import ProjectCard from "./ProjectCard";
 import SongCard from "./SongCard";
 
-function ReviewProject() {
+interface ReviewProjectProps {
+  handleBack?: () => void;
+}
+
+function ReviewProject({ handleBack }: ReviewProjectProps) {
   const { songs } = useSongs();
   const [loadingMessage, setLoadingMessage] = useState<string>(null);
-  const { data: packages } = usePackages();
-  const [package1] = packages ?? [];
-  const { fee } = package1;
+  const tokens = songs.reduce((sum, song) => (sum += song?.editions), 0);
+  const { data: tokenFee } = useTokenFee(tokens);
 
-  if (loadingMessage)
-    return (
-      <>
-        <Typography variant="h4" gutterBottom mb={"3rem"}>
-          {loadingMessage}
-        </Typography>
-        <CircularProgress size={70} />
-      </>
-    );
+  if (loadingMessage) return <LoadingMessage message={loadingMessage} />;
 
   return (
     <>
+      <Grid
+        container
+        item
+        xs={10}
+        marginX={"auto"}
+        justifyContent={"start"}
+        mb={"1rem"}
+      >
+        <BackButton override={handleBack} />
+      </Grid>
       <Typography variant="h4" gutterBottom>
         Review & Launch
       </Typography>
       <Typography variant="subtitle1" gutterBottom>
         Review your project settings and launch.
       </Typography>
-      <Grid item mt={"2rem"} xs={10} marginX={"auto"}>
+      {handleBack && (
+        <Grid item xs={10} marginX={"auto"} mt={"1rem"} textAlign={"left"}>
+          <Alert severity="info">
+            <AlertTitle>Everything Look Good?</AlertTitle>
+            It&apos;s cheaper to launch your project correctly the first time.
+            Changing project settings later may require additional gas fees.
+          </Alert>
+        </Grid>
+      )}
+      <Grid item xs={10} marginX={"auto"} mt={"1rem"} textAlign={"left"}>
+        <Alert severity="info">
+          <AlertTitle>Revenue Splits</AlertTitle>
+          You&apos;ll be able to add splits after project creation.
+        </Alert>
+      </Grid>
+      <Grid item mt={"1rem"} xs={10} marginX={"auto"}>
         <ProjectCard />
         {songs.map((song, index) => (
           <SongCard key={index} song={song} index={index} />
         ))}
       </Grid>
       <Grid container item xs={10} marginX={"auto"} mt={"2rem"}>
-        <OrderSummary fee={formatEther(fee ?? 0)} />
+        <OrderSummary fee={tokenFee ? formatEther(tokenFee) : ""} />
         <LaunchProject
-          deploymentFee={fee}
+          deploymentFee={tokenFee}
           setLoadingMessage={setLoadingMessage}
+          tokens={tokens}
         />
       </Grid>
     </>

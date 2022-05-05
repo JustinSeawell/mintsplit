@@ -1,43 +1,35 @@
 import { BigNumber } from "ethers";
 import useSWR from "swr";
 import { MintSplitERC721 } from "../contracts/types";
-import { Collection } from "../types/Collection";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
 import useNFTContract from "./useNFTContract";
 
 function getCollectionData(contract: MintSplitERC721) {
   return async (_: string, address: string) => {
-    const [params, isPaused, revenueSplitter] = await Promise.all([
-      await contract.getParams(),
-      await contract.paused(),
-      await contract.revenueSplitter(),
-    ]);
+    const [params, editions, tokens, isPaused, totalBalance, owner] =
+      await Promise.all([
+        await contract.getParams(),
+        await contract.getEditions(),
+        await contract.tokens(),
+        await contract.isPaused(),
+        await contract.totalBalance(),
+        await contract.owner(),
+      ]);
 
-    const {
-      projectName: name,
-      symbol,
-      contentCount,
-      mintPrice,
-      // releaseTime,
-      editions,
-    } = params;
-
-    const totalSupplyLimit = editions.reduce(
-      (prev, value) => prev.add(value),
+    const totalEditions = editions.reduce(
+      (sum, edition) => sum.add(edition),
       BigNumber.from(0)
     );
 
     return {
-      name,
-      symbol,
-      contentCount,
+      params,
+      editions,
+      totalEditions,
+      tokens,
       isPaused,
-      mintPrice,
-      totalSupply: BigNumber.from(10), // TODO: Update contract to make this number public
-      secondsUntilMinting: 0, // TODO: calculate this #
-      totalSupplyLimit: BigNumber.from(1),
-      revenueSplitter: revenueSplitter,
-    } as Collection;
+      totalBalance,
+      owner,
+    };
   };
 }
 

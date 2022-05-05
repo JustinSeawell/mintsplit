@@ -1,38 +1,39 @@
 import { Typography } from "@mui/material";
+import { formatDuration, Interval, intervalToDuration } from "date-fns";
 import { useEffect, useState } from "react";
 
 interface CountdownTimerProps {
-  secondsRemaining: number;
+  releaseTime: number; // In *seconds* since epoch
 }
 
-const formatSeconds = (seconds: number) =>
-  new Date(seconds * 1000).toISOString().slice(11, 19);
-
-function CountdownTimer({ secondsRemaining }: CountdownTimerProps) {
-  const [seconds, setSeconds] = useState(secondsRemaining);
+function CountdownTimer({ releaseTime }: CountdownTimerProps) {
+  const [remainingInterval, setRemainingInterval] = useState<Interval>(null);
 
   useEffect(() => {
-    let interval = setInterval(() => {
-      if (seconds > 0) {
-        setSeconds(seconds - 1);
-      }
+    const releaseDate = new Date(releaseTime * 1000);
 
-      if (seconds == 0) {
-        clearInterval(interval);
-      }
+    let oncePerSecond = setInterval(() => {
+      const interval = {
+        start: new Date(),
+        end: releaseDate,
+      } as Interval;
+
+      setRemainingInterval(interval);
     }, 1000);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(oncePerSecond);
     };
-  }, [seconds]);
+  }, [releaseTime]);
 
   return (
     <>
       <Typography variant="subtitle1">Minting starts in:</Typography>
-      <Typography variant="h3" gutterBottom>
-        {formatSeconds(seconds)}
-      </Typography>
+      {remainingInterval && (
+        <Typography variant="h4" gutterBottom mb={"2rem"}>
+          {formatDuration(intervalToDuration(remainingInterval))}
+        </Typography>
+      )}
     </>
   );
 }

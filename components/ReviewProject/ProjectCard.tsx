@@ -1,14 +1,12 @@
 import { Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 import { useProject } from "../../contexts/Project";
 import { useSongs } from "../../contexts/Songs";
-import { getTokenRanges } from "../ManageRevenueSplits/getTokenRanges";
 
 function ProjectCard() {
   const { project } = useProject();
   const { songs } = useSongs();
   const { name, symbol, description, artistName, mintCost } = project;
-  const tokenRanges = getTokenRanges(songs);
-  const totalNFTCount = tokenRanges[tokenRanges.length - 1][1];
+  const totalNFTCount = songs.reduce((sum, song) => (sum += song?.editions), 0);
   return (
     <Card
       sx={{

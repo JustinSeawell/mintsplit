@@ -18,7 +18,6 @@ export const defaultProject = {
   description: "",
   artistName: "",
   mintCost: 0,
-  mintLimit: 0,
   releaseDate: new Date(),
 } as Project;
 

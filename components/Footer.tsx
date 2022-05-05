@@ -11,7 +11,7 @@ export default function Footer() {
   return (
     <StyledFooter>
       <Typography fontWeight={300} fontSize={13}>
-        © MintSplit 2022
+        © MintSplit {new Date().getFullYear()}
       </Typography>
     </StyledFooter>
   );
