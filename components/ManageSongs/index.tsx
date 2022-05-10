@@ -41,6 +41,11 @@ function ManageSongs({ onSuccess, handleBack: goBack }: ManageSongsProps) {
   };
 
   const handleNext = () => {
+    if (songs.length == 0) {
+      setError("Upload one or more songs to proceed.");
+      return;
+    }
+
     const newErrors = validateSongs();
     if (newErrors.size > 0) {
       setInputErrors(newErrors);
