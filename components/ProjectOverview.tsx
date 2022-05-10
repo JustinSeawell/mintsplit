@@ -158,7 +158,7 @@ function ProjectOverview({
                 been minted.{" "}
                 {balance &&
                   `The contract balance is: ${formatEther(balance)} Eth.`}{" "}
-                {userBalance &&
+                {userBalanceDisplay &&
                   `Your balance is: ${formatEther(userBalanceDisplay)} Eth.`}
               </Typography>
             </CardContent>
