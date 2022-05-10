@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import {
   PaymentSplitConfigStruct,
   PaymentSplitStruct,
-  PaymentSplitStructOutput,
 } from "../../contracts/types/MintSplitERC721";
 import useContent from "../../hooks/useContent";
 import useNFTContract from "../../hooks/useNFTContract";
@@ -47,7 +46,7 @@ function ContentSplits({
   ownerAddress,
   isMint,
 }: ContentSplitsProps) {
-  const { account } = useWeb3React(); // TODO: Update this to be contract owner
+  const { account } = useWeb3React();
   const contract = useNFTContract(contractAddress);
   const { data: content } = useContent(contractAddress, id);
   const [input, setInput] = useState("");
@@ -64,6 +63,12 @@ function ContentSplits({
   const { data: onChain } = useSplits(contractAddress, id, isMint);
   const isOwner = account == ownerAddress;
   const ownerLabel = `${ownerAddress} - (${isOwner ? "You" : "Creator"})`;
+
+  const forceUpdate = async () => {
+    const split = await contract.getContentSplits(id, isMint);
+    setSplit(split);
+    setChanged(false);
+  };
 
   const setBps = (percentage: string, index: number) => {
     const newSplit = clonePaymentSplit(split);
@@ -103,6 +108,7 @@ function ContentSplits({
   };
 
   const markChanged = () => {
+    setResult(null);
     if (!changed) setChanged(true);
   };
 
@@ -126,7 +132,7 @@ function ContentSplits({
       const trx = await contract.setSplit(config, { from: account });
       await trx.wait();
       setResult("success");
-      setLoadedFromChain(false); // Set loaded back to false so component can update
+      await forceUpdate();
     } catch (err) {
       setResult("error");
     }
@@ -144,6 +150,7 @@ function ContentSplits({
       return;
     }
 
+    setResult(null);
     setLoading(true);
     const config = {
       contentId: id,
@@ -155,7 +162,7 @@ function ContentSplits({
       const trx = await contract.setSplit(config, { from: account });
       await trx.wait();
       setResult("success");
-      setLoadedFromChain(false); // Set loaded back to false so component can update
+      await forceUpdate();
     } catch (err) {
       setResult("error");
     }
@@ -171,17 +178,19 @@ function ContentSplits({
 
   useEffect(() => {
     if (!onChain || loadedFromChain) return;
-    setLoadedFromChain(true);
 
-    if (!isEmpty(onChain)) {
-      setSplit(onChain);
-    } else if (!isMint) {
-      const newSplit = clonePaymentSplit(emptySplit);
-      newSplit.recipients.push(ownerAddress);
-      // Intentionally not setting Bps here!
-      setSplit(newSplit);
-    }
-  }, [isMint, loadedFromChain, onChain, ownerAddress]);
+    setSplit(onChain);
+    setLoadedFromChain(true);
+  }, [loadedFromChain, onChain]);
+
+  useEffect(() => {
+    if (isMint || !isEmpty(split) || !loadedFromChain) return;
+
+    const newSplit = clonePaymentSplit(emptySplit);
+    newSplit.recipients.push(ownerAddress);
+    // Intentionally not setting Bps here!
+    setSplit(newSplit);
+  }, [isMint, loadedFromChain, ownerAddress, split]);
 
   return (
     <>
