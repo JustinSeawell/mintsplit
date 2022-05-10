@@ -1,27 +1,34 @@
+import { BigNumber } from "ethers";
 import useSWR from "swr";
-import { AudioNFT } from "../contracts/types";
-import useAudioNFTContract from "./useAudioNFTContract";
+import { MintSplitERC721 } from "../contracts/types";
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive";
+import useNFTContract from "./useNFTContract";
 
-function getCollectionData(contract: AudioNFT) {
+function getCollectionData(contract: MintSplitERC721) {
   return async (_: string, address: string) => {
-    const [name, cost, totalSupply, maxSupply, allowMintingAfter, isRevealed] =
+    const [params, editions, tokens, isPaused, totalBalance, owner] =
       await Promise.all([
-        await contract.name(),
-        await contract.cost(),
-        await contract.totalSupply(),
-        await contract.maxSupply(),
-        await contract.allowMintingAfter(),
-        await contract.isRevealed(),
+        await contract.getParams(),
+        await contract.getEditions(),
+        await contract.tokens(),
+        await contract.isPaused(),
+        await contract.totalBalance(),
+        await contract.owner(),
       ]);
 
+    const totalEditions = editions.reduce(
+      (sum, edition) => sum.add(edition),
+      BigNumber.from(0)
+    );
+
     return {
-      name,
-      cost,
-      totalSupply,
-      maxSupply,
-      allowMintingAfter,
-      isRevealed,
+      params,
+      editions,
+      totalEditions,
+      tokens,
+      isPaused,
+      totalBalance,
+      owner,
     };
   };
 }
@@ -30,7 +37,7 @@ export default function useCollectionData(
   contractAddress: string,
   suspense = false
 ) {
-  const contract = useAudioNFTContract(contractAddress);
+  const contract = useNFTContract(contractAddress);
 
   const shouldFetch = typeof contractAddress === "string" && !!contract;
 

@@ -1,25 +1,28 @@
-import { Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { AppBar, Container, Toolbar, Typography } from "@mui/material";
 import Link from "next/link";
+import React from "react";
 import useEagerConnect from "../hooks/useEagerConnect";
 import Account from "./Account";
-
-const Nav = styled("nav")({
-  display: "flex",
-  justifyContent: "space-between",
-  padding: "1.5rem",
-});
+import ElevationScroll from "./ElevationScroll";
 
 export default function Navbar() {
   const triedToEagerConnect = useEagerConnect();
   return (
-    <Nav>
-      <Link href="/">
-        <a>
-          <Typography fontWeight={900}>MintSplit</Typography>
-        </a>
-      </Link>
-      <Account triedToEagerConnect={triedToEagerConnect} />
-    </Nav>
+    <ElevationScroll>
+      <AppBar position="sticky" color="inherit">
+        <Container maxWidth="lg" disableGutters>
+          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Link href="/">
+              <a>
+                <Typography fontWeight={700} fontSize={"1.25rem"}>
+                  MintSplit
+                </Typography>
+              </a>
+            </Link>
+            <Account triedToEagerConnect={triedToEagerConnect} />
+          </Toolbar>
+        </Container>
+      </AppBar>
+    </ElevationScroll>
   );
 }

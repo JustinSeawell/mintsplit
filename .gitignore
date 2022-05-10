@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+coverage.json
 
 # next.js
 /.next/
@@ -36,3 +37,5 @@ yarn-error.log*
 
 # typescript
 tsconfig.buildinfo
+# Sentry
+.sentryclirc
