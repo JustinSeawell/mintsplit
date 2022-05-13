@@ -1,3 +1,9 @@
+## Mainnet
+May 13th, 2022
+Factory:            0x01E12a82819ca114Fc5A1E514bB1aee2CaDC733F
+ERC721:             0x0A1F0Bb5997Ae1982c4dC8b2eeF8C0584464f83B
+Library:            0x31829b293eCb6FC91329AA6C9A319B3E44f046f2
+
 ## Rinkeby Network
 Feb 23rd, 2022
 Factory:            0x8e72205388031103E3e2ba1B4375371197Afc528

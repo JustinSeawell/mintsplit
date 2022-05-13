@@ -65,6 +65,18 @@ module.exports = {
     // },
     // Useful for deploying to a public network.
     // NB: It's important to wrap the provider as a function.
+    mainnet: {
+      provider: () =>
+        new HDWalletProvider({
+          privateKeys: [process.env.MAINNET_PK],
+          providerOrUrl: process.env.MAINNET_PROVIDER_URL,
+        }),
+      network_id: 1,
+      gas: 8000000,
+      gasPrice: 65000000000, // 65 gwei
+      confirmations: 2, // # of confs to wait between deployments. (default: 0)
+      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
+    },
     ropsten: {
       provider: () =>
         new HDWalletProvider({
