@@ -27,7 +27,6 @@ const getProvider = async (connector: NetworkConnector) => {
 export const NetworkProviderProvider = ({ children }) => {
   const { account, connector } = useWeb3React<Web3Provider>();
   const [provider, setProvider] = useState<JsonRpcProvider>(null);
-  console.log("activate network", account, connector, provider);
   useNetworkConnection();
 
   useEffect(() => {
