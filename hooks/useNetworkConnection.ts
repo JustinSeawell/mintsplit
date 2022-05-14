@@ -4,6 +4,7 @@ import { network } from "../connectors";
 
 export default function useNetworkConnection() {
   const { account, library, activate, active, connector } = useWeb3React();
+  console.log("activate network", account, library, active);
 
   useEffect(() => {
     if (!account && !library && !active) {
