@@ -15,8 +15,8 @@ import useBalance from "../hooks/useBalance";
 const TABS = ["Project", "Revenue Splits", "Content", "Settings"];
 
 function Project() {
-  const { account, library } = useWeb3React();
-  const isConnected = typeof account === "string" && !!library;
+  const { account } = useWeb3React();
+  const isConnected = !!account;
   const router = useRouter();
   const { cid, t } = router.query;
   const contractAddress = cid as string;

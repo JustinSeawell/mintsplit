@@ -26,9 +26,9 @@ function LaunchProject({
   tokens,
 }: LaunchProjectProps) {
   const router = useRouter();
-  const { account, library, chainId } = useWeb3React();
+  const { account, chainId } = useWeb3React();
   const { data: ethBalance } = useETHBalance(account);
-  const isConnected = typeof account === "string" && !!library;
+  const isConnected = !!account;
   const isOnNetwork = chainId === parseInt(process.env.NEXT_PUBLIC_CHAIN_ID);
   const [loading, setLoading] = useState(false);
   const mintSplitFactory = useMintSplitFactory();
