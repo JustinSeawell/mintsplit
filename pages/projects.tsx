@@ -9,8 +9,8 @@ import useProjectsByUser from "../hooks/useProjectsByUser";
 
 function Projects() {
   const router = useRouter();
-  const { account, library } = useWeb3React();
-  const isConnected = typeof account === "string" && !!library;
+  const { account } = useWeb3React();
+  const isConnected = !!account;
   const { data: projects } = useProjectsByUser(account);
 
   return (

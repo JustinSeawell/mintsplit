@@ -6,30 +6,34 @@ import useNFTContract from "./useNFTContract";
 
 function getCollectionData(contract: MintSplitERC721) {
   return async (_: string, address: string) => {
-    const [params, editions, tokens, isPaused, totalBalance, owner] =
-      await Promise.all([
-        await contract.getParams(),
-        await contract.getEditions(),
-        await contract.tokens(),
-        await contract.isPaused(),
-        await contract.totalBalance(),
-        await contract.owner(),
-      ]);
+    try {
+      const [params, editions, tokens, isPaused, totalBalance, owner] =
+        await Promise.all([
+          await contract.getParams(),
+          await contract.getEditions(),
+          await contract.tokens(),
+          await contract.isPaused(),
+          await contract.totalBalance(),
+          await contract.owner(),
+        ]);
 
-    const totalEditions = editions.reduce(
-      (sum, edition) => sum.add(edition),
-      BigNumber.from(0)
-    );
+      const totalEditions = editions.reduce(
+        (sum, edition) => sum.add(edition),
+        BigNumber.from(0)
+      );
 
-    return {
-      params,
-      editions,
-      totalEditions,
-      tokens,
-      isPaused,
-      totalBalance,
-      owner,
-    };
+      return {
+        params,
+        editions,
+        totalEditions,
+        tokens,
+        isPaused,
+        totalBalance,
+        owner,
+      };
+    } catch (err) {
+      console.error(err);
+    }
   };
 }
 

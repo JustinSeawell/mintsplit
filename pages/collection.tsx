@@ -2,7 +2,7 @@ import { formatEther, parseEther } from "@ethersproject/units";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
-import { Interval, intervalToDuration, isAfter } from "date-fns";
+import { isAfter } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
@@ -11,12 +11,23 @@ import Layout from "../components/Layout";
 import NFTCard from "../components/NFTCard";
 import useCollectionData from "../hooks/useCollectionData";
 import useNFTContract from "../hooks/useNFTContract";
+import { hooks, network } from "../connectors/network";
 
 const TITLE = "Collection";
 const MINT_LIMIT = 20;
 
+const {
+  useChainId,
+  useAccounts,
+  useError,
+  useIsActivating,
+  useIsActive,
+  useProvider,
+  useENSNames,
+} = hooks;
+
 function Collection() {
-  const { account } = useWeb3React();
+  const { account, chainId } = useWeb3React();
   const router = useRouter();
   const { cid } = router.query;
   const contractAddress = cid as string;
@@ -159,7 +170,9 @@ function Collection() {
                       contentId={index + 1}
                       qty={contentQty?.get(index + 1)}
                       handleQtyChange={handleQtyChange}
-                      disabled={(!isReleased && !isOwner) || isPaused}
+                      disabled={
+                        (!isReleased && !isOwner) || isPaused || !account
+                      }
                     />
                   </Grid>
                 );

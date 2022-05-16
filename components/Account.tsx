@@ -1,9 +1,7 @@
 import { Box, Button, Link, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
-import { UserRejectedRequestError } from "@web3-react/injected-connector";
 import { useEffect, useState } from "react";
-import { injected } from "../connectors";
-import useENSName from "../hooks/useENSName";
+import { metaMask } from "../connectors/metaMask";
 import useMetaMaskOnboarding from "../hooks/useMetaMaskOnboarding";
 import { formatEtherscanLink, shortenHex } from "../util";
 
@@ -12,8 +10,7 @@ type AccountProps = {
 };
 
 const Account = ({ triedToEagerConnect }: AccountProps) => {
-  const { active, error, activate, chainId, account, setError } =
-    useWeb3React();
+  const { isActive, error, chainId, account, ENSName } = useWeb3React();
 
   const {
     isMetaMaskInstalled,
@@ -25,13 +22,11 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
   // manage connecting state for injected connector
   const [connecting, setConnecting] = useState(false);
   useEffect(() => {
-    if (active || error) {
+    if (isActive || error) {
       setConnecting(false);
       stopOnboarding();
     }
-  }, [active, error, stopOnboarding]);
-
-  const ENSName = useENSName(account);
+  }, [error, isActive, stopOnboarding]);
 
   if (error) {
     return null;
@@ -49,17 +44,10 @@ const Account = ({ triedToEagerConnect }: AccountProps) => {
             variant="outlined"
             color="secondary"
             disabled={connecting}
-            onClick={() => {
+            onClick={async () => {
               setConnecting(true);
-
-              activate(injected, undefined, true).catch((error) => {
-                // ignore the error if it's a user rejected request
-                if (error instanceof UserRejectedRequestError) {
-                  setConnecting(false);
-                } else {
-                  setError(error);
-                }
-              });
+              await metaMask.connectEagerly();
+              metaMask.activate(chainId);
             }}
           >
             <Typography fontWeight={300} fontSize={".8rem"}>
