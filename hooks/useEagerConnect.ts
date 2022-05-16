@@ -1,29 +1,38 @@
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react";
-import { injected } from "../connectors";
+import { network } from "../connectors/network";
+import { metaMask } from "../connectors/metaMask";
 
 export default function useEagerConnect() {
-  const { activate, active } = useWeb3React();
-  const [tried, setTried] = useState(false);
+  const chainId = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID);
+  const { isActive } = useWeb3React();
+  const [triedMetaMask, setTriedMetaMask] = useState(false);
+  const [triedNetwork, setTriedNetwork] = useState(false);
+  const tried = triedMetaMask && triedNetwork;
 
   useEffect(() => {
-    injected.isAuthorized().then((isAuthorized) => {
-      if (isAuthorized) {
-        activate(injected, undefined, true).catch(() => {
-          setTried(true);
-        });
-      } else {
-        setTried(true);
-      }
-    });
-  }, [activate]);
+    const attemptConnectToMM = async () => {
+      await metaMask.connectEagerly();
+      metaMask.activate(chainId);
+      setTriedMetaMask(true);
+    };
+    if (!isActive && !triedMetaMask) attemptConnectToMM();
+  }, [chainId, isActive, triedMetaMask]);
 
-  // if the connection worked, wait until we get confirmation of that to flip the flag
   useEffect(() => {
-    if (!tried && active) {
-      setTried(true);
+    const attemptConnectToNetwork = async () => {
+      await network.activate(chainId);
+      setTriedNetwork(true);
+    };
+    if (!isActive && triedMetaMask && !triedNetwork) attemptConnectToNetwork();
+  }, [chainId, isActive, triedMetaMask, triedNetwork]);
+
+  useEffect(() => {
+    if (!tried && isActive) {
+      setTriedMetaMask(true);
+      setTriedNetwork(true);
     }
-  }, [tried, active]);
+  }, [isActive, tried]);
 
   return tried;
 }
