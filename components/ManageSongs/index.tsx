@@ -1,9 +1,9 @@
 import { LoadingButton } from "@mui/lab";
 import { Alert, Divider, Grid, Typography } from "@mui/material";
-import mixpanel from "mixpanel-browser";
 import { ChangeEvent, useState } from "react";
 import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../../constants";
 import { useSongs } from "../../contexts/Songs";
+import { track } from "../../utils/track";
 import { SongInputError, validate } from "../../validation/song";
 import { Input } from "../Input";
 import { Label } from "../Label";
@@ -52,7 +52,7 @@ function ManageSongs({ onSuccess, handleBack: goBack }: ManageSongsProps) {
       return;
     }
 
-    mixpanel.track("edited content");
+    track("edited content");
     onSuccess();
   };
 
