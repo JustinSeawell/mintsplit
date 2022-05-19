@@ -7,9 +7,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import mixpanel from "mixpanel-browser";
 import { ChangeEvent, useState } from "react";
 import { useProject } from "../../contexts/Project";
+import { track } from "../../utils/track";
 import { ProjectInputError, validate } from "../../validation/project";
 import SetupNav from "../SetupNav";
 
@@ -55,7 +55,7 @@ function ManageProject({ onSuccess, handleBack }: ManageProjectProps) {
       setInputError(newError);
       return;
     }
-    mixpanel.track("added project details");
+    track("added project details");
     onSuccess();
   };
 

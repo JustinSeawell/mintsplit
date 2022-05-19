@@ -3,7 +3,7 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
 import { BigNumber, BigNumberish } from "ethers";
-import mixpanel from "mixpanel-browser";
+
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
 import { defaultProject, useProject } from "../../contexts/Project";
@@ -11,6 +11,7 @@ import { useSongs } from "../../contexts/Songs";
 import { ParamsStruct } from "../../contracts/types/MintSplitFactory";
 import useETHBalance from "../../hooks/useETHBalance";
 import useMintSplitFactory from "../../hooks/useMintSplitFactory";
+import { track } from "../../utils/track";
 import { uploadSongs } from "../../utils/upload";
 import { getProjectCreated } from "./getProjectCreated";
 
@@ -53,7 +54,7 @@ function LaunchProject({
     });
 
     const receipt = await trx.wait();
-    mixpanel.track("launched project", { content: _editions.length, tokens });
+    track("launched project", { content: _editions.length, tokens });
     const { args } = getProjectCreated(receipt);
     const [contractAddr] = args;
 

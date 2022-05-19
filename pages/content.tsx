@@ -21,7 +21,7 @@ import { Input } from "../components/Input";
 import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../constants";
 import BackButton from "../components/BackButton";
 import { MetaData } from "../types/MetaData";
-import mixpanel from "mixpanel-browser";
+import { track } from "../utils/track";
 
 function Content() {
   const router = useRouter();
@@ -109,7 +109,7 @@ function Content() {
     } as Content;
 
     setContent(newContent);
-    mixpanel.track("uploaded content");
+    track("uploaded content");
   };
 
   const handleDelete = async () => {
@@ -216,7 +216,7 @@ function Content() {
         opts
       );
       await trx.wait();
-      mixpanel.track("added content", { tokens: newTokens });
+      track("added content", { tokens: newTokens });
     } else {
       const trx = await mintSplitFactory.setContent(
         contractAddress,

@@ -1,4 +1,3 @@
-import mixpanel from "mixpanel-browser";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Grid, Typography } from "@mui/material";
 import { ChangeEvent, useState } from "react";
@@ -7,6 +6,7 @@ import { convertAudioToSongs } from "./convertAudioToSongs";
 import { Input } from "../Input";
 import { Label } from "../Label";
 import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../../constants";
+import { track } from "../../utils/track";
 
 interface UploadAudioProps {
   onSuccess: () => void;
@@ -28,7 +28,7 @@ function UploadAudio({ onSuccess }: UploadAudioProps) {
 
     if (!isAllowed) return;
     setSongs(convertAudioToSongs(e.target.files));
-    mixpanel.track("uploaded content");
+    track("uploaded content");
     onSuccess();
   };
 

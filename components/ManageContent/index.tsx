@@ -1,8 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { LoadingButton } from "@mui/lab";
 import { Divider, Grid } from "@mui/material";
-import mixpanel from "mixpanel-browser";
+
 import { useRouter } from "next/dist/client/router";
+import { track } from "../../utils/track";
 import ContentCard from "./ContentCard";
 
 interface ManageContentProps {
@@ -19,7 +20,7 @@ function ManageContent({
   const router = useRouter();
 
   const handleClick = () => {
-    mixpanel.track("clicked add content");
+    track("clicked add content");
     router.push(`/content?cid=${contractAddress}`);
   };
 

@@ -18,9 +18,9 @@ const connectors: [MetaMask | Network, Web3ReactHooks][] = [
 ];
 
 function NextWeb3App({ Component, pageProps }: AppProps) {
-  mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_ID, {
-    debug: process.env.NEXT_PUBLIC_ENVIRONMENT != "prod",
-  });
+  if (process.env.NEXT_PUBLIC_ENVIRONMENT === "prod") {
+    mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_ID);
+  }
 
   return (
     <Web3ReactProvider connectors={connectors}>
