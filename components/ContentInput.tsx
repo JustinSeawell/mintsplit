@@ -1,7 +1,11 @@
 import { DeleteForever } from "@mui/icons-material";
 import { Button, Grid, Stack, TextField, Typography } from "@mui/material";
 import { ChangeEvent } from "react";
-import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../constants";
+import {
+  FILE_LIMIT,
+  FILE_LIMIT_DISPLAY,
+  IMAGE_FILE_ACCEPT,
+} from "../constants";
 import theme from "../theme";
 import { Content } from "../types/Content";
 import { ContentInputError, validate } from "../validation/content";
@@ -99,7 +103,7 @@ function ContentInput({
           <Label htmlFor={"art-file"}>
             <Input
               id={"art-file"}
-              accept="image/*"
+              accept={IMAGE_FILE_ACCEPT}
               type="file"
               onChange={handleArtChange}
             />

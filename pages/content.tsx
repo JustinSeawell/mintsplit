@@ -18,7 +18,11 @@ import useMintSplitFactory from "../hooks/useMintSplitFactory";
 import { useWeb3React } from "@web3-react/core";
 import { Label } from "../components/Label";
 import { Input } from "../components/Input";
-import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../constants";
+import {
+  AUDIO_FILE_ACCEPT,
+  FILE_LIMIT,
+  FILE_LIMIT_DISPLAY,
+} from "../constants";
 import BackButton from "../components/BackButton";
 import { MetaData } from "../types/MetaData";
 import { track } from "../utils/track";
@@ -255,7 +259,7 @@ function Content() {
           <Label htmlFor="audio-files" sx={{ marginY: "1rem" }}>
             <Input
               id="audio-files"
-              accept="audio/*"
+              accept={AUDIO_FILE_ACCEPT}
               type="file"
               onChange={handleAudioFileUpload}
             />
