@@ -5,7 +5,11 @@ import { useSongs } from "../../contexts/Songs";
 import { convertAudioToSongs } from "./convertAudioToSongs";
 import { Input } from "../Input";
 import { Label } from "../Label";
-import { FILE_LIMIT, FILE_LIMIT_DISPLAY } from "../../constants";
+import {
+  AUDIO_FILE_ACCEPT,
+  FILE_LIMIT,
+  FILE_LIMIT_DISPLAY,
+} from "../../constants";
 import { track } from "../../utils/track";
 
 interface UploadAudioProps {
@@ -48,7 +52,7 @@ function UploadAudio({ onSuccess }: UploadAudioProps) {
       <Label htmlFor="audio-files" sx={{ marginTop: "1rem" }}>
         <Input
           id="audio-files"
-          accept="audio/*"
+          accept={AUDIO_FILE_ACCEPT}
           multiple
           type="file"
           onChange={handleChange}
