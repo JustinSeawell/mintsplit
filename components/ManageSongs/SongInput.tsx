@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ChangeEvent } from "react";
+import { IMAGE_FILE_ACCEPT } from "../../constants";
 import theme from "../../theme";
 import { Song } from "../../types/Song";
 import { SongInputError, validate } from "../../validation/song";
@@ -107,7 +108,7 @@ function SongInput({
             <Label htmlFor={`art-file-${index}`}>
               <Input
                 id={`art-file-${index}`}
-                accept="image/*"
+                accept={IMAGE_FILE_ACCEPT}
                 type="file"
                 onChange={handleArtChange}
               />
