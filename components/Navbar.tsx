@@ -14,8 +14,6 @@ import Account from "./Account";
 import ElevationScroll from "./ElevationScroll";
 
 export default function Navbar() {
-  // const triedToEagerConnect = useEagerConnect();
-  const triedToEagerConnect = true;
   return (
     <ElevationScroll>
       <AppBar position="sticky" color="inherit">
@@ -51,7 +49,7 @@ export default function Navbar() {
                 </Grid>
               </a>
             </Link>
-            <Account triedToEagerConnect={triedToEagerConnect} />
+            {/* <Account triedToEagerConnect={triedToEagerConnect} /> */}
           </Toolbar>
         </Container>
       </AppBar>
