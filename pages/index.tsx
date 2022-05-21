@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import GreyBox from "../components/GreyBox";
 import Layout from "../components/Layout";
 import useTokenFee from "../hooks/useTokenFee";
+import theme from "../theme";
 import { track } from "../utils/track";
 
 /**
@@ -38,8 +39,20 @@ function Home() {
 
   return (
     <>
+      <div
+        style={{
+          backgroundColor: theme.palette.secondary.main,
+          color: "#fff",
+          padding: ".5rem 1rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        Coming Soon!
+      </div>
       <Layout title="Create Audio NFT Projects & Split Revenue with Collaborators">
-        <Stack spacing={20}>
+        <Stack spacing={10}>
           <section>
             <Grid container mt={"4rem"}>
               <Grid item xs={12} md={6}>
@@ -73,7 +86,8 @@ function Home() {
                   your revenue with collaborators.
                 </Typography>
                 <Grid container mt={"2rem"}>
-                  <Button
+                  <Typography>Coming Soon!</Typography>
+                  {/* <Button
                     variant="contained"
                     color="secondary"
                     size="large"
@@ -81,8 +95,8 @@ function Home() {
                     onClick={handleClick}
                   >
                     Start Creating
-                  </Button>
-                  {/* <Button variant="text">Watch Video</Button> */}
+                  </Button> */}
+                  {/* <Button variant="text">Coming Soon!</Button> */}
                 </Grid>
               </Grid>
             </Grid>
@@ -143,66 +157,7 @@ function Home() {
               </Grid>
             </Grid>
           </section>
-          <section>
-            <Grid container justifyContent={"center"}>
-              <Grid item xs={12} md={6}>
-                <Typography
-                  fontWeight={"700"}
-                  fontSize={"2.25rem"}
-                  lineHeight={"47px"}
-                  gutterBottom
-                >
-                  A Simple Tool at a Great Price
-                </Typography>
-                <Typography
-                  fontWeight={"300"}
-                  fontSize={"1.5rem"}
-                  lineHeight={"40px"}
-                >
-                  Start small and scale as you go.
-                </Typography>
-                <Grid container item xs={12} mt={"3rem"} alignItems={"center"}>
-                  <Grid item xs={12} md={3} py={".5rem"}>
-                    <TextField
-                      variant="outlined"
-                      type={"number"}
-                      value={qty}
-                      InputProps={{
-                        inputMode: "numeric",
-                        inputProps: { min: 0 },
-                        endAdornment: (
-                          <InputAdornment position="end">NFTs</InputAdornment>
-                        ),
-                      }}
-                      onChange={(e) => setQty(parseInt(e.target.value))}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md py={".5rem"}>
-                    <Typography fontWeight={"300"} fontSize="1.25rem">
-                      for
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} md py={".5rem"}>
-                    <Typography
-                      fontWeight={"300"}
-                      fontSize="2rem"
-                      lineHeight={"42px"}
-                    >
-                      {tokenFee ? `Ξ${formatEther(tokenFee)}` : "-"}
-                    </Typography>
-                    <Typography
-                      fontWeight={"300"}
-                      fontSize="1rem"
-                      lineHeight={"40px"}
-                    >
-                      (+gas)
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </section>
-          <section>
+          {/* <section>
             <Grid mb={"4rem"}>
               <Typography
                 fontWeight={"700"}
@@ -222,7 +177,7 @@ function Home() {
                 Start Creating
               </Button>
             </Grid>
-          </section>
+          </section> */}
         </Stack>
       </Layout>
     </>

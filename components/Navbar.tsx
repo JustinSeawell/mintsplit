@@ -14,7 +14,8 @@ import Account from "./Account";
 import ElevationScroll from "./ElevationScroll";
 
 export default function Navbar() {
-  const triedToEagerConnect = useEagerConnect();
+  // const triedToEagerConnect = useEagerConnect();
+  const triedToEagerConnect = true;
   return (
     <ElevationScroll>
       <AppBar position="sticky" color="inherit">
